@@ -30,8 +30,8 @@ function ISInventoryPage:prerender()
     end
 end
 
-local function isMouseOverEquipmentUi(self)
-    if(self.equipmentUi) then
+function ISInventoryPage:isMouseOverEquipmentUi()
+    if(self.equipmentUi and self.equipmentUi.playerNum == 0) then
         local mouseX = getMouseX()
         local mouseY = getMouseY()
         if mouseX >= self.equipmentUi:getAbsoluteX() and mouseX <= self.equipmentUi:getAbsoluteX() + self.equipmentUi:getWidth() and
@@ -50,7 +50,7 @@ end
 local og_onMouseDownOutside = ISInventoryPage.onMouseDownOutside
 function ISInventoryPage:onMouseDownOutside(x, y)
     local wasPin = self.pin
-    if isMouseOverEquipmentUi(self) then
+    if self:isMouseOverEquipmentUi() then
         self.pin = true
     end 
     local ret =  og_onMouseDownOutside(self, x, y)
@@ -61,7 +61,7 @@ end
 local og_onRightMouseDownOutside = ISInventoryPage.onRightMouseDownOutside
 function ISInventoryPage:onRightMouseDownOutside(x, y)
     local wasPin = self.pin
-    if isMouseOverEquipmentUi(self) then
+    if self:isMouseOverEquipmentUi() then
         self.pin = true
     end 
     local ret =  og_onRightMouseDownOutside(self, x, y)
@@ -72,7 +72,7 @@ end
 local og_onMouseMoveOutside = ISInventoryPage.onMouseMoveOutside
 function ISInventoryPage:onMouseMoveOutside(dx, dy)
 	local wasPin = self.pin
-    if isMouseOverEquipmentUi(self) then
+    if self:isMouseOverEquipmentUi() then
         self.pin = true
     end
     local ret = og_onMouseMoveOutside(self, dx, dy)

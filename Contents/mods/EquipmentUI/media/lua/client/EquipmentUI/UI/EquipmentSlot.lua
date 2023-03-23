@@ -3,7 +3,7 @@ local c = require "EquipmentUI/Settings"
 
 EquipmentSlot = ISPanel:derive("EquipmentSlot");
 
-function EquipmentSlot:new(x, y, bodyLocation, inventoryPane, playerNum)
+function EquipmentSlot:new(x, y, bodyLocation, equipmentUi, inventoryPane, playerNum)
 	local o = {}
 	o = ISPanel:new(x, y, c.SLOT_SIZE, c.SLOT_SIZE);
 	setmetatable(o, self)
@@ -15,6 +15,7 @@ function EquipmentSlot:new(x, y, bodyLocation, inventoryPane, playerNum)
     o.backgroundColor = {r=0, g=0, b=0, a=0.95};
 
     o.bodyLocation = bodyLocation;
+    o.equipmentUi = equipmentUi;
     o.inventoryPane = inventoryPane;
     o.playerNum = playerNum;
     
@@ -67,7 +68,7 @@ function EquipmentSlot:render()
 
     self:drawTextureScaledUniform(self.item:getTex(), 1, 1, c.SCALE, alpha, self.getItemColor(self.item));
     if self:isMouseOver() then
-        self.inventoryPane:doTooltipForItem(self.item);
+        self.equipmentUi:doTooltipForItem(self, self.item);
     end
 end
 

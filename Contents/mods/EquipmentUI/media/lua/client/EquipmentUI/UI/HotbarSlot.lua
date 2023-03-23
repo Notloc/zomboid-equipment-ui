@@ -4,12 +4,13 @@ local BG_TEXTURE = getTexture("media/ui/equipmentui/ItemSlot.png")
 
 HotbarSlot = ISPanel:derive("HotbarSlot");
 
-function HotbarSlot:new(hotbar, inventoryPane, playerNum)
+function HotbarSlot:new(hotbar, equipmentUi, inventoryPane, playerNum)
     local o = ISPanel:new(50, 50, c.SUPER_SLOT_SIZE, c.SUPER_SLOT_SIZE);
 	setmetatable(o, self)
     self.__index = self
 
     o.hotbar = hotbar;
+    o.equipmentUi = equipmentUi;
     o.inventoryPane = inventoryPane;
     o.playerNum = playerNum;
 
@@ -71,7 +72,7 @@ function HotbarSlot:render()
         self:drawTextCentre(slot.name, center, y, 1, 1, 1, 1, UIFont.Small);
 
         if item then
-            self.inventoryPane:doTooltipForItem(item);
+            self.equipmentUi:doTooltipForItem(self, item);
         end
     end
 

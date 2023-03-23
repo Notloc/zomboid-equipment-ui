@@ -232,3 +232,7 @@ end
 function EquipmentUIWindow:SaveLayout(name, layout)
     ISLayoutManager.DefaultSaveWindow(self, layout)
 end
+
+function EquipmentUIWindow:updateTooltip()
+    self.equipmentUi:updateTooltip();
+end

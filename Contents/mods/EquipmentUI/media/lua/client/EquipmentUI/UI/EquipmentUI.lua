@@ -51,7 +51,7 @@ function EquipmentUI:createEquipmentSlots()
     self.superSlots = {};
 
     for _, superSlotDef in pairs(SUPER_SLOT_DEFS) do
-        local superslot = EquipmentSuperSlot:new(superSlotDef, self.inventoryPane, self.playerNum);
+        local superslot = EquipmentSuperSlot:new(superSlotDef, self, self.inventoryPane, self.playerNum);
         superslot:initialise();
 
         if superSlotDef.position then
@@ -129,7 +129,7 @@ function EquipmentUI:createDynamicEquipmentSlot(bodyLocation)
         return slot
     end
 
-    local slot = EquipmentSlot:new(50, 50, bodyLocation, self.inventoryPane, self.playerNum);
+    local slot = EquipmentSlot:new(50, 50, bodyLocation, self, self.inventoryPane, self.playerNum);
     slot.borderColor = {r=1, g=1, b=1, a=1};
     slot:initialise();
     self:addChild(slot);
@@ -137,11 +137,11 @@ function EquipmentUI:createDynamicEquipmentSlot(bodyLocation)
 end
 
 function EquipmentUI:createWeaponSlots()
-    self.primarySlot = WeaponSlot:new(WEAPON_SLOT_DEFS[1], self.inventoryPane, self.playerNum);
+    self.primarySlot = WeaponSlot:new(WEAPON_SLOT_DEFS[1], self, self.inventoryPane, self.playerNum);
     self.primarySlot:initialise();
     self:addChild(self.primarySlot);
 
-    self.secondarySlot = WeaponSlot:new(WEAPON_SLOT_DEFS[2], self.inventoryPane, self.playerNum, true);
+    self.secondarySlot = WeaponSlot:new(WEAPON_SLOT_DEFS[2], self, self.inventoryPane, self.playerNum, true);
     self.secondarySlot:initialise();
     self:addChild(self.secondarySlot);
 end
@@ -206,7 +206,7 @@ function EquipmentUI:createHotbarSlot(hotbar)
         newSlot:setVisible(true)
         
     else
-        newSlot = HotbarSlot:new(hotbar, self.inventoryPane, self.playerNum);
+        newSlot = HotbarSlot:new(hotbar, self, self.inventoryPane, self.playerNum);
         newSlot:initialise();
         self:addChild(newSlot);
     end
@@ -258,4 +258,43 @@ end
 
 function EquipmentUI:onMouseDown(x, y)
     return false
+end
+
+function EquipmentUI:doTooltipForItem(owner, item)
+    self.tooltipOwner = owner
+    self.inventoryPane:doTooltipForItem(item)
+end
+
+local function tContains(haystack, needle)
+    for _, v in pairs(haystack) do
+        if v == needle then
+            return true
+        end
+    end
+    return false
+end
+
+function EquipmentUI:updateTooltip()
+    if not self.inventoryPane.toolRender then
+        return
+    end
+
+    local owner = nil
+    for _, child in pairs(self.children) do
+        if child:isMouseOver() then
+            owner = child
+        end
+    end
+
+    if not owner or (self.tooltipOwner ~= owner and (not owner.children or not tContains(owner.children, self.tooltipOwner))) then
+        self:closeTooltip()
+    end
+end
+
+function EquipmentUI:closeTooltip()
+    if self.inventoryPane.toolRender then
+        self.inventoryPane.toolRender:removeFromUIManager()
+        self.inventoryPane.toolRender:setVisible(false)
+        self.tooltipOwner = nil
+    end
 end

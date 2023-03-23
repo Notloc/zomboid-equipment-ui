@@ -5,7 +5,7 @@ local TWO_HAND_OFFSET = 1.3;
 
 WeaponSlot = ISPanel:derive("WeaponSlot");
 
-function WeaponSlot:new(weaponSlotDef, inventoryPane, playerNum, isSecondary)
+function WeaponSlot:new(weaponSlotDef, equipmentUi, inventoryPane, playerNum, isSecondary)
     local o = {}
 	o = ISPanel:new(0, 0, c.WEAPON_SLOT_SIZE, c.WEAPON_SLOT_SIZE);
 	setmetatable(o, self)
@@ -15,6 +15,7 @@ function WeaponSlot:new(weaponSlotDef, inventoryPane, playerNum, isSecondary)
     o.backgroundColor = {r=0, g=0, b=0, a=0.15};
 
     o.weaponSlotDef = weaponSlotDef;
+    o.equipmentUi = equipmentUi;
     o.inventoryPane = inventoryPane;
     o.playerNum = playerNum;
     o.player = getSpecificPlayer(playerNum);
@@ -108,7 +109,7 @@ function WeaponSlot:render()
     end
 
     if self:isMouseOver() then
-        self.inventoryPane:doTooltipForItem(item);
+        self.equipmentUi:doTooltipForItem(self, item);
     end
 end
 

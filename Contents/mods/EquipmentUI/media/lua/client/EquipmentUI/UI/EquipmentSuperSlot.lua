@@ -8,7 +8,7 @@ local MINI_ICON_SIZE = 32 * MINI_ICON_SCALE
 
 EquipmentSuperSlot = ISPanel:derive("EquipmentSuperSlot");
 
-function EquipmentSuperSlot:new(slotDefinition, inventoryPane, playerNum)
+function EquipmentSuperSlot:new(slotDefinition, equipmentUi, inventoryPane, playerNum)
     local o = ISPanel:new(0, 0, (c.SUPER_SLOT_SIZE + c.SUPER_SLOT_SUB_ITEM_WIDTH), c.SUPER_SLOT_SIZE);
 	setmetatable(o, self)
     self.__index = self
@@ -19,6 +19,7 @@ function EquipmentSuperSlot:new(slotDefinition, inventoryPane, playerNum)
     end
 
     o.slotDefinition = slotDefinition;
+    o.equipmentUi = equipmentUi;
     o.inventoryPane = inventoryPane;
     o.playerNum = playerNum;
 	o.moveWithMouse = true;
@@ -45,7 +46,7 @@ end
 
 function EquipmentSuperSlot:createChildren()
     for _, bodyLocation in ipairs(self.slotDefinition.bodyLocations) do
-        local slot = EquipmentSlot:new(0, 0, bodyLocation, self.inventoryPane, self.playerNum);
+        local slot = EquipmentSlot:new(0, 0, bodyLocation, self.equipmentUi, self.inventoryPane, self.playerNum);
         slot:initialise();
         slot:setVisible(false);
         self:addChild(slot);
@@ -262,9 +263,16 @@ function EquipmentSuperSlot:render()
     if not DragAndDrop.isDragging() and self:isMouseOver() then
         local x = self:getMouseX();
         local y = self:getMouseY();
+
+        if y > c.SUPER_SLOT_SIZE then
+            return
+        end
+
         local index = self:mousePositionToSlotIndex(x, y);
         if index ~= -1 and index <= count then
-            self.inventoryPane:doTooltipForItem(itemsToDraw[index]);
+            self.equipmentUi:doTooltipForItem(self, itemsToDraw[index]);
+        else
+            self.equipmentUi:closeTooltip();
         end
     end
 end
