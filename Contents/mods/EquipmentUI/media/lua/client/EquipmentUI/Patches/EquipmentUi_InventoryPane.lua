@@ -1,0 +1,59 @@
+function ISInventoryPane:doTooltipForItem(item)
+	if not self.parent:isVisible() then return end
+
+    local weightOfStack = 0.0
+	if item and not instanceof(item, "InventoryItem") then
+		if #item.items > 2 then
+			weightOfStack = item.weight
+		end
+		item = item.items[1]
+	end
+
+	if getPlayerContextMenu(self.player):isAnyVisible() then
+		item = nil
+	end
+
+	if item and self.toolRender and (item == self.toolRender.item) and
+			(weightOfStack == self.toolRender.tooltip:getWeightOfStack()) and
+			self.toolRender:isVisible() then
+		return
+	end
+
+	if item and not ISMouseDrag.dragging then
+		if self.toolRender then
+			self.toolRender:setItem(item)
+			self.toolRender:setVisible(true)
+			self.toolRender:addToUIManager()
+			self.toolRender:bringToTop()
+		else
+			self.toolRender = ISToolTipInv:new(item)
+			self.toolRender:initialise()
+			self.toolRender:addToUIManager()
+			self.toolRender:setVisible(true)
+			self.toolRender:setOwner(self)
+			self.toolRender:setCharacter(getSpecificPlayer(self.player))
+			self.toolRender.anchorBottomLeft = { x = self:getAbsoluteX() + self.column2, y = self:getParent():getAbsoluteY() }
+		end
+		self.toolRender.followMouse = not self.doController
+		self.toolRender.tooltip:setWeightOfStack(weightOfStack)
+	elseif self.toolRender then
+		self.toolRender:removeFromUIManager()
+		self.toolRender:setVisible(false)
+	end
+
+	-- Hack for highlighting doors when a Key tooltip is displayed.
+	if self.parent.onCharacter then
+		if not self.toolRender or not self.toolRender:getIsVisible() then
+			item = nil
+		end
+		Key.setHighlightDoors(self.player, item)
+	end
+
+	local inventoryPage = getPlayerInventory(self.player)
+	local inventoryTooltip = inventoryPage and inventoryPage.inventoryPane.toolRender
+	local lootPage = getPlayerLoot(self.player)
+	local lootTooltip = lootPage and lootPage.inventoryPane.toolRender
+	UIManager.setPlayerInventoryTooltip(self.player,
+		inventoryTooltip and inventoryTooltip.javaObject or nil,
+		lootTooltip and lootTooltip.javaObject or nil)
+end

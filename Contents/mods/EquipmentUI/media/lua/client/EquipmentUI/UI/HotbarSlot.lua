@@ -1,0 +1,202 @@
+require "IS/UI/ISPanel"
+local c = require "EquipmentUI/Settings"
+local BG_TEXTURE = getTexture("media/ui/equipmentui/ItemSlot.png")
+
+HotbarSlot = ISPanel:derive("HotbarSlot");
+
+function HotbarSlot:new(hotbar, inventoryPane, playerNum)
+    local o = ISPanel:new(50, 50, c.SUPER_SLOT_SIZE, c.SUPER_SLOT_SIZE);
+	setmetatable(o, self)
+    self.__index = self
+
+    o.hotbar = hotbar;
+    o.inventoryPane = inventoryPane;
+    o.playerNum = playerNum;
+
+	o.moveWithMouse = true;
+
+    o.mouseDownX = 0;
+    o.mouseDownY = 0;
+
+	return o;
+end
+
+function HotbarSlot:getItem()
+   return self.hotbar.attachedItems[self.index] 
+end
+
+function HotbarSlot:prerender()
+    if not self.index then
+        return
+    end
+
+    local itemCount = 0;
+
+    self:drawRect(0, 0, c.SUPER_SLOT_SIZE, c.SUPER_SLOT_SIZE, 0.65, 0, 0, 0);
+    self:drawTextureScaled(BG_TEXTURE, 0, 0, c.SUPER_SLOT_SIZE, c.SUPER_SLOT_SIZE, 1, 0.4, 0.4, 0.4);
+    self:drawRectBorder(0, 0, c.SUPER_SLOT_SIZE, c.SUPER_SLOT_SIZE, 1, 1, 1, 1);
+
+    local dragItem = DragAndDrop.getDraggedItem();
+    if dragItem and dragItem ~= self:getItem() then
+        if self:canAttachItem(dragItem) then
+           local col = c.GOOD_COLOR
+           if self:getItem() then
+               col = c.MIDDLE_COLOR
+           end
+            self:drawRect(1, 1, c.SUPER_SLOT_SIZE - 2, c.SUPER_SLOT_SIZE - 2, 0.5, col.r, col.g, col.b);
+        end
+    end
+end
+
+function HotbarSlot:render()
+    if not self.index then
+        return
+    end
+    local item = self:getItem()
+  
+    --if the mouse is over the super slot, draw the name of the slot
+    if self:isMouseOver() then
+
+        local slot = self.hotbar.availableSlot[self.index]
+
+        local width = getTextManager():MeasureStringX(UIFont.Small, slot.name);
+        local height = getTextManager():getFontFromEnum(UIFont.Small):getLineHeight();
+        
+        local center = c.SUPER_SLOT_SIZE / 2
+        local x = center - width / 2 - 3
+        local y = -height - 2
+
+        self:drawRect(x, y, width + 8, height+4, 0.9, 0, 0, 0);
+        self:drawRectBorder(x, y, width + 8, height+4, 1, 1, 1, 1);
+        self:drawTextCentre(slot.name, center, y, 1, 1, 1, 1, UIFont.Small);
+
+        if item then
+            self.inventoryPane:doTooltipForItem(item);
+        end
+    end
+
+    if not item then 
+        return
+    end
+
+    local xOff = (c.SUPER_SLOT_SIZE - c.SLOT_SIZE) / 2;
+    local yOff = (c.SUPER_SLOT_SIZE - c.SLOT_SIZE) / 2;
+    local mainAlpha = 1;
+    if item == DragAndDrop.getDraggedItem() then
+        mainAlpha = 0.5;
+    end
+    self:drawTextureScaledUniform(item:getTex(), xOff, yOff, c.SCALE, mainAlpha, EquipmentSlot.getItemColor(item));
+end
+
+
+function HotbarSlot:onRightMouseUp(x, y)
+    local item = self:getItem()
+    if item then
+        EquipmentSlot.openItemContextMenu(self, x, y, item, self.playerNum)
+    end
+end
+
+function HotbarSlot:onMouseDown(x, y)
+    local item = self:getItem()
+    if item then
+        DragAndDrop.prepareDrag(self, DragAndDrop.convertItemToStack(item), x, y);
+    end
+end
+
+function HotbarSlot:onMouseMove(dx, dy)
+    DragAndDrop.startDrag(self);
+end
+
+function HotbarSlot:onMouseMoveOutside(dx, dy)
+    DragAndDrop.startDrag(self);
+end
+
+function HotbarSlot:onMouseUp(x, y)
+    local draggedItem = DragAndDrop.getDraggedItem();
+    if draggedItem and draggedItem ~= self:getItem() then
+        self:attachItemIfPossible(draggedItem);
+    end
+    DragAndDrop.endDrag();
+end
+
+function HotbarSlot:onMouseUpOutside(x, y)
+    DragAndDrop.cancelDrag(self, HotbarSlot.dropOrUnequip);
+end
+
+
+function HotbarSlot:attachItemIfPossible(item)
+    local slot = self.hotbar.availableSlot[self.index]
+    local slotDef = slot.def;
+
+    for i, v in pairs(slotDef.attachments) do
+        if item:getAttachmentType() == i then
+            local doIt = true;
+            if self.hotbar.replacements and self.hotbar.replacements[item:getAttachmentType()] then
+                slot = self.hotbar.replacements[item:getAttachmentType()];
+                if slot == "null" then
+                    doIt = false;
+                end
+            end
+            if doIt then
+                self.hotbar:attachItem(item, v, self.index, slotDef, true);
+                return
+            end
+        end
+    end
+end
+
+function HotbarSlot:canAttachItem(item)
+    local slot = self.hotbar.availableSlot[self.index]
+    local slotDef = slot.def;
+
+    for i, v in pairs(slotDef.attachments) do
+        if item:getAttachmentType() == i then
+            local doIt = true;
+            if self.hotbar.replacements and self.hotbar.replacements[item:getAttachmentType()] then
+                slot = self.hotbar.replacements[item:getAttachmentType()];
+                if slot == "null" then
+                    doIt = false;
+                end
+            end
+            if doIt then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+function HotbarSlot:dropOrUnequip()
+    if InventoryTetris then
+        return
+    end
+
+    local item = self:getItem()
+    if item then
+        if self.inventoryPane:isMouseOver() then
+            self.hotbar:removeItem(item, true)
+            return
+        end
+
+        local playerObj = getSpecificPlayer(self.playerNum)
+        local vehicle = playerObj:getVehicle()
+        if vehicle then
+            return
+        end
+
+        local mouseOverUi = false
+        local mx, my = getMouseX(), getMouseY()
+        local allUi = UIManager.getUI()
+        for i = 0, allUi:size() - 1 do
+            local ui = allUi:get(i)
+            if ui:isPointOver(mx, my) then
+                mouseOverUi = true
+                break
+            end
+        end
+
+        if not mouseOverUi then
+            ISInventoryPaneContextMenu.dropItem(item, self.playerNum)
+        end
+    end
+end
