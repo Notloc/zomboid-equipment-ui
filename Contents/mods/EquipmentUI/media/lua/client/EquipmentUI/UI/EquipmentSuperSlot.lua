@@ -211,7 +211,8 @@ end
 function EquipmentSuperSlot:render()
     --if the mouse is over the super slot, draw the name of the slot
     if self:isMouseOver() then
-        local width = getTextManager():MeasureStringX(UIFont.Small, self.slotDefinition.name);
+        local name = getText(self.slotDefinition.name);
+        local width = getTextManager():MeasureStringX(UIFont.Small, name);
         local height = getTextManager():getFontFromEnum(UIFont.Small):getLineHeight();
         
         local center = c.SUPER_SLOT_SIZE / 2
@@ -220,7 +221,7 @@ function EquipmentSuperSlot:render()
 
         self:drawRect(x, y, width + 8, height+4, 0.9, 0, 0, 0);
         self:drawRectBorder(x, y, width + 8, height+4, 1, 1, 1, 1);
-        self:drawTextCentre(self.slotDefinition.name, center, y, 1, 1, 1, 1, UIFont.Small);
+        self:drawTextCentre(name, center, y, 1, 1, 1, 1, UIFont.Small);
     end
 
     local itemsToDraw = {};

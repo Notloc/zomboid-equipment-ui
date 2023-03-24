@@ -9,7 +9,7 @@ if not EQUIPMENT_UI_MOD_OPTIONS then
             EQUIPMENT_UI_SCALE_INDEX = "UI_equipment_options_scale",
         },
         mod_id = "EQUIPMENT_UI",
-        mod_shortname = "Equipment UI",
+        mod_shortname = getText("UI_optionscreen_binding_EquipmentUI"),
     }
 end
 
