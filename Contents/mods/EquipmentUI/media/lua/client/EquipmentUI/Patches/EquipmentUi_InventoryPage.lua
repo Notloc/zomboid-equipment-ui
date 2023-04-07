@@ -13,11 +13,24 @@ function ISInventoryPage:createChildren()
         toggleButton:initialise()
         toggleButton:addToUIManager()
 
+        local dragRenderer = nil
         if not InventoryTetris then
-            local dragRenderer = EquipmentDragItemRenderer:new(self.equipmentUi, self.inventoryPane)
+            dragRenderer = EquipmentDragItemRenderer:new(self.equipmentUi, self.inventoryPane, self.player)
             dragRenderer:initialise()
             dragRenderer:addToUIManager()
         end
+
+        Events.OnPlayerDeath.Add(function(player)
+            if not player:isLocalPlayer() or player:getPlayerNum() ~= self.player then
+                return
+            end
+
+            self.equipmentUi:removeFromUIManager()
+            toggleButton:removeFromUIManager()
+            if dragRenderer then
+                dragRenderer:removeFromUIManager()
+            end
+        end);
     end
 end
 
@@ -50,7 +63,7 @@ end
 local og_onMouseDownOutside = ISInventoryPage.onMouseDownOutside
 function ISInventoryPage:onMouseDownOutside(x, y)
     local wasPin = self.pin
-    if self:isMouseOverEquipmentUi() then
+    if self.equipmentUi and self.equipmentUi.isDocked and self:isMouseOverEquipmentUi() then
         self.pin = true
     end 
     local ret =  og_onMouseDownOutside(self, x, y)
@@ -61,7 +74,7 @@ end
 local og_onRightMouseDownOutside = ISInventoryPage.onRightMouseDownOutside
 function ISInventoryPage:onRightMouseDownOutside(x, y)
     local wasPin = self.pin
-    if self:isMouseOverEquipmentUi() then
+    if self.equipmentUi and self.equipmentUi.isDocked and self:isMouseOverEquipmentUi() then
         self.pin = true
     end 
     local ret =  og_onRightMouseDownOutside(self, x, y)
@@ -71,8 +84,17 @@ end
 
 local og_onMouseMoveOutside = ISInventoryPage.onMouseMoveOutside
 function ISInventoryPage:onMouseMoveOutside(dx, dy)
+    if DragAndDrop.isDragging() and self.isCollapsed then
+        self.isCollapsed = false;
+        if isClient() and not self.onCharacter then
+            self.inventoryPane.inventory:requestSync();
+        end
+        self:clearMaxDrawHeight();
+        self.collapseCounter = 0;
+    end
+
 	local wasPin = self.pin
-    if self:isMouseOverEquipmentUi() then
+    if self.equipmentUi and self.equipmentUi.isDocked and self:isMouseOverEquipmentUi() then
         self.pin = true
     end
     local ret = og_onMouseMoveOutside(self, dx, dy)
@@ -84,4 +106,12 @@ function ISInventoryPage:uncollapse()
     self.collapseCounter = 0;
     self.isCollapsed = false;
     self:clearMaxDrawHeight();
+end
+
+local og_setVisible = ISInventoryPage.setVisible
+function ISInventoryPage:setVisible(visible)
+    og_setVisible(self, visible)
+    if self.equipmentUi then
+        self.equipmentUi:setVisible(visible and not self.equipmentUi.isClosed)
+    end
 end

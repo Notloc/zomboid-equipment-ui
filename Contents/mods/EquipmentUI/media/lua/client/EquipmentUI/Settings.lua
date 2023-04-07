@@ -1,5 +1,5 @@
 if not EQUIPMENT_UI_SETTINGS then
-    EQUIPMENT_UI_SETTINGS = {
+    EQUIPMENT_UI_SETTINGS = { -- Should I do colorblind profiles? No colorpicker in ModOptions unfortunately :(
         GOOD_COLOR = {r=0.0, g=1.0, b=0.0, a=1.0},
         MIDDLE_COLOR = {r=1.0, g=1.0, b=0.0, a=1.0},
         BAD_COLOR = {r=1.0, g=0.0, b=0.0, a=1.0},
@@ -46,6 +46,12 @@ if not EQUIPMENT_UI_SETTINGS then
     
         EQUIPMENT_UI_SETTINGS.OnScaleChanged = {}
         EQUIPMENT_UI_SETTINGS:applyScale(1)
+
+    -- HIDING EQUIPPED ITEMS
+        EQUIPMENT_UI_SETTINGS.applyHideEquippedItems = function(self, hide)
+            self.HIDE_EQUIPPED_ITEMS = hide
+        end
+        EQUIPMENT_UI_SETTINGS:applyHideEquippedItems(false)
 end
 
 return EQUIPMENT_UI_SETTINGS

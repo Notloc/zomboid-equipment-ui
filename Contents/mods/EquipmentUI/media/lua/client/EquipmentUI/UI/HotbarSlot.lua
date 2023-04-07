@@ -59,17 +59,28 @@ function HotbarSlot:render()
     if self:isMouseOver() then
 
         local slot = self.hotbar.availableSlot[self.index]
+        local name = getTextOrNull("IGUI_HotbarAttachment_" .. slot.slotType) or slot.name;
 
-        local width = getTextManager():MeasureStringX(UIFont.Small, slot.name);
+        local width = getTextManager():MeasureStringX(UIFont.Small, name);
         local height = getTextManager():getFontFromEnum(UIFont.Small):getLineHeight();
         
         local center = c.SUPER_SLOT_SIZE / 2
+
+
+        if center - width / 2 + self.x < 0 then
+            center = width / 2 + 3
+        elseif center + width / 2 + self.x > self.parent:getWidth() then
+            center = c.SUPER_SLOT_SIZE - width / 2 - 3
+        end
+
         local x = center - width / 2 - 3
         local y = -height - 2
 
         self:drawRect(x, y, width + 8, height+4, 0.9, 0, 0, 0);
         self:drawRectBorder(x, y, width + 8, height+4, 1, 1, 1, 1);
-        self:drawTextCentre(slot.name, center, y, 1, 1, 1, 1, UIFont.Small);
+        self:drawTextCentre(name, center, y, 1, 1, 1, 1, UIFont.Small);
+
+        self:bringToTop();
 
         if item then
             self.equipmentUi:doTooltipForItem(self, item);

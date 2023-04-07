@@ -172,9 +172,11 @@ end
 function EquipmentUI:updateHotbarSlots()
     self:disableHotbarSlots()
     
-
     local hotbar = getPlayerHotbar(self.playerNum)
-    
+    if not hotbar then -- We're probably dead and 1 frame away from this ui getting destroyed
+        return
+    end
+
     local y = self.dynamicEquipmentY + c.HOTBAR_SLOT_Y_OFFSET
 
     local row = 0

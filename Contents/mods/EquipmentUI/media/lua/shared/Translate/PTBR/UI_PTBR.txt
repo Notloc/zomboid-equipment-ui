@@ -2,6 +2,7 @@ UI_PTBR = {
 	UI_optionscreen_binding_EquipmentUI = "Interface do Equipamento",
 	UI_optionscreen_binding_equipment_toggle_window = "Abrir Janela de Equipamento",
 	UI_equipment_options_scale = "Escala da Interface do Equipamento",
+	UI_equipment_options_hide_equipped_items = "Ocultar itens equipados",
 
 	UI_equipment_equipment = "Equipamento",
 	UI_equipment_hotbar = "Barra de Atalhos",

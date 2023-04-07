@@ -16,6 +16,8 @@ function NotlocScrollView:new(x, y, w, h)
     o.scrollChildren = {};
     o.lastY = 0;
 
+    o.scrollSensitivity = 12;
+
     return o;
 end
 
@@ -27,6 +29,20 @@ end
 function NotlocScrollView:addScrollChild(child)
     self:addChild(child);
     table.insert(self.scrollChildren, child);
+
+    local y = self:getYScroll()
+    child.keepOnScreen = false
+    child:setY(child:getY() + y)
+end
+
+function NotlocScrollView:removeScrollChild(child)
+    self:removeChild(child);
+    for i, v in ipairs(self.scrollChildren) do
+        if v == child then
+            table.remove(self.scrollChildren, i);
+            return
+        end
+    end
 end
 
 function NotlocScrollView:prerender()
@@ -49,7 +65,7 @@ end
 
 function NotlocScrollView:onMouseWheel(del)
     --if self.inventoryPage.isCollapsed then return false; end
-	self:setYScroll(self:getYScroll() - (del*12));
+	self:setYScroll(self:getYScroll() - (del * self.scrollSensitivity));
     return true;
 end
 

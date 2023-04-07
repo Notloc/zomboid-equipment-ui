@@ -2,6 +2,7 @@ UI_ES = {
 	UI_optionscreen_binding_EquipmentUI = "UI de equipamiento"
 	UI_optionscreen_binding_equipment_toggle_window = "Abrir ventana de equipo",
 	UI_equipment_options_scale = "Escala de IU de equipamiento",
+	UI_equipment_options_hide_equipped_items = "Ocultar objetos equipados",
 
 	UI_equipment_equipment = "Equipamiento",
 	UI_equipment_hotbar = "Barra de acceso rápido",

@@ -4,9 +4,11 @@ if not EQUIPMENT_UI_MOD_OPTIONS then
     EQUIPMENT_UI_MOD_OPTIONS = {
         options = {
             EQUIPMENT_UI_SCALE_INDEX = 2,
+            HIDE_EQUIPPED_ITEMS = false,
         },
         names = {
             EQUIPMENT_UI_SCALE_INDEX = "UI_equipment_options_scale",
+            HIDE_EQUIPPED_ITEMS = "UI_equipment_options_hide_equipped_items",
         },
         mod_id = "EQUIPMENT_UI",
         mod_shortname = getText("UI_optionscreen_binding_EquipmentUI"),
@@ -33,5 +35,14 @@ if ModOptions and ModOptions.getInstance then
     end
 
     EQUIPMENT_UI_SETTINGS:applyScale(EQUIPMENT_UI_MOD_OPTIONS.options.EQUIPMENT_UI_SCALE_INDEX * 0.5)
+    
+    
+    local hideEquippedItems = settings:getData("HIDE_EQUIPPED_ITEMS")
 
+    function hideEquippedItems:OnApplyInGame(val)
+        EQUIPMENT_UI_MOD_OPTIONS.options.HIDE_EQUIPPED_ITEMS = val
+        EQUIPMENT_UI_SETTINGS:applyHideEquippedItems(val)
+    end
+    
+    EQUIPMENT_UI_SETTINGS:applyHideEquippedItems(EQUIPMENT_UI_MOD_OPTIONS.options.HIDE_EQUIPPED_ITEMS)
 end

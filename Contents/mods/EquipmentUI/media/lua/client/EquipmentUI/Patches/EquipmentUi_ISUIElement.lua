@@ -7,16 +7,21 @@ function ISUIElement:drawTextureCenteredAndSquare(texture, x, y, targetSizePx, a
     local largestDimension = math.max(texW, texH)
     local scaler = targetSizePx / largestDimension
     
+    local ratioX = texW / largestDimension
+    local ratioY = texH / largestDimension
+
     texW = texW * scaler
     texH = texH * scaler
 
     local off = math.max(texW, texH)
 
-    local x2 = x - off / 2
+    local x2 = x - off / 2 * ratioX
     x2 = math.floor(x2)
     
-    local y2 = y - off / 2
+    local y2 = y - off / 2 * ratioY
     y2 = math.floor(y2)
+
+
 
     self:drawTextureScaledUniform(texture, x2, y2, scaler, alpha, r, g, b);
 end

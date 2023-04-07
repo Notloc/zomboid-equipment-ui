@@ -4,13 +4,14 @@ local BG_TEXTURE = getTexture("media/ui/equipmentui/ItemSlot.png")
 
 EquipmentDragItemRenderer = ISUIElement:derive("DragItemRenderer")
 
-function EquipmentDragItemRenderer:new(equipmentUi, inventoryPane)
+function EquipmentDragItemRenderer:new(equipmentUi, inventoryPane, playerNum)
     local o = ISUIElement:new(0, 0, 0, 0)
     setmetatable(o, self)
     self.__index = self
 
     o.equipmentUi = equipmentUi
     o.inventoryPane = inventoryPane
+    o.playerNum = playerNum
 
     return o
 end
@@ -29,6 +30,11 @@ function EquipmentDragItemRenderer:render()
         return
     end
     
+    local lootPage = getPlayerLoot(self.playerNum)
+    if self.inventoryPane.dragging or lootPage.inventoryPane.dragging then
+        return
+    end
+
     local x = self:getMouseX()
     local y = self:getMouseY()
 

@@ -1,3 +1,5 @@
+local c = require "EquipmentUI/Settings"
+
 local og_updateTooltip = ISInventoryPane.updateTooltip
 function ISInventoryPane:updateTooltip()
 	if self.parent:isMouseOverEquipmentUi() then
@@ -66,3 +68,53 @@ function ISInventoryPane:doTooltipForItem(item)
 		inventoryTooltip and inventoryTooltip.javaObject or nil,
 		lootTooltip and lootTooltip.javaObject or nil)
 end
+
+-- Delay overriding the functions until the game starts, so we can make sure our changes are not overwritten by other mods
+-- i.e. Alternative Inventory Rendering
+local events_hooked = false
+Events.OnGameStart.Add(function()
+	if events_hooked then return end
+
+	local og_renderdetails = ISInventoryPane.renderdetails
+	function ISInventoryPane:renderdetails(doDragged)
+		if not self.parent.onCharacter then
+			og_renderdetails(self, doDragged)
+			return
+		end
+
+		if self.doHideEquipped ~= c.HIDE_EQUIPPED_ITEMS then -- So the list is updated when the setting is changed
+			self:refreshContainer()
+		end
+		
+		if not c.HIDE_EQUIPPED_ITEMS then 
+			self.doHideEquipped = false
+			og_renderdetails(self, doDragged)
+		else
+			self.doHideEquipped = true
+			self.itemslist = self.hideEquippedItemsList
+			og_renderdetails(self, doDragged)
+			self.itemslist = self.cachedItemList
+		end
+	end
+
+	local og_refreshContainer = ISInventoryPane.refreshContainer
+	function ISInventoryPane:refreshContainer()
+		og_refreshContainer(self)
+		if not self.parent.onCharacter then return end
+
+		self.cachedItemList = self.itemslist
+
+		if not c.HIDE_EQUIPPED_ITEMS or not self.parent.onCharacter then return end
+		
+		local newlist = {}
+		for k, v in ipairs(self.itemslist) do
+			if v and not (v.equipped or v.inHotbar) then
+				newlist[#newlist+1] = self.itemslist[k]
+			end
+		end
+		self.hideEquippedItemsList = newlist
+	end
+
+	events_hooked = true
+end)
+
