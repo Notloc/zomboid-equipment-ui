@@ -12,6 +12,10 @@ function DragAndDrop.getDraggedItem()
     return nil
 end
 
+function DragAndDrop.isDragOwner(testOwner)
+    return ISMouseDrag.dragOwner == testOwner
+end
+
 function DragAndDrop.prepareDrag(owner, itemStack, x, y)
     DragAndDrop.ownersForCancel = {}
 
@@ -79,7 +83,7 @@ DragAndDrop.processCancelation = function()
                 val.callback(owner)
             end
             DragAndDrop.endDrag()
-            return
+            break
         end
     end
     DragAndDrop.ownersForCancel = {}

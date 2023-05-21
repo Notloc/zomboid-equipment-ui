@@ -407,15 +407,13 @@ function EquipmentSuperSlot:setExpanded(expanded)
 end
 
 function EquipmentSuperSlot:dropOrUnequip()
-    if InventoryTetris then
-        return
-    end
-
     local item = self:getTopItem()
     if item then
-        if self.inventoryPane:isMouseOver() then
-            ISInventoryPaneContextMenu.unequipItem(item, self.playerNum)
-            return
+        if not InventoryTetris then
+            if self.inventoryPane:isMouseOver() then
+                ISInventoryPaneContextMenu.unequipItem(item, self.playerNum)
+                return
+            end
         end
 
         local playerObj = getSpecificPlayer(self.playerNum)
@@ -424,18 +422,7 @@ function EquipmentSuperSlot:dropOrUnequip()
             return
         end
 
-        local mouseOverUi = false
-        local mx, my = getMouseX(), getMouseY()
-        local allUi = UIManager.getUI()
-        for i = 0, allUi:size() - 1 do
-            local ui = allUi:get(i)
-            if ui:isPointOver(mx, my) then
-                mouseOverUi = true
-                break
-            end
-        end
-
-        if not mouseOverUi then
+        if not ISUIElement.isMouseOverAnyUI() then
             ISInventoryPaneContextMenu.dropItem(item, self.playerNum)
         end
     end

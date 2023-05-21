@@ -45,6 +45,13 @@ function NotlocScrollView:removeScrollChild(child)
     end
 end
 
+function NotlocScrollView:isChildVisible(child)
+    local childY = child:getY()
+    local childH = child:getHeight()
+    local selfH = self:getHeight()
+    return childY + childH > 0 and childY < selfH
+end
+
 function NotlocScrollView:prerender()
     self:setStencilRect(0, 0, self.width, self.height);
     self:updateScrollbars();

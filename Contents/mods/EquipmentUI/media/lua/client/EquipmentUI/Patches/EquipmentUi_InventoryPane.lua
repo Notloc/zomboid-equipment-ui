@@ -101,6 +101,7 @@ Events.OnGameStart.Add(function()
 	function ISInventoryPane:refreshContainer()
 		og_refreshContainer(self)
 		if not self.parent.onCharacter then return end
+		if InventoryTetris then return end
 
 		self.cachedItemList = self.itemslist
 
