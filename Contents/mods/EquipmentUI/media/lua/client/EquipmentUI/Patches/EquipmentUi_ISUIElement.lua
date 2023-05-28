@@ -7,13 +7,17 @@ function ISUIElement:drawTextureCenteredAndSquare(texture, x, y, targetSizePixel
     local largestDimension = math.max(texW, texH)
     local scaler = targetSizePixels / largestDimension
     
-    largestDimension = largestDimension * scaler
+    local diff = math.abs(largestDimension - targetSizePixels)
+    if diff < 8 then -- Just draw the texture unscale if it's close enough
+        scaler = 1
+    end
+
     texW = texW * scaler
     texH = texH * scaler
 
-    local x2 = x - (largestDimension + texW) * 0.25
-    local y2 = y - (largestDimension + texH) * 0.25
-    self:drawTextureScaledUniform(texture, x2, y2, scaler, alpha, r, g, b);
+    local x2 = x - texW * 0.5
+    local y2 = y - texH * 0.5
+    self:drawTextureScaled(texture, x2, y2, texW, texH, alpha, r, g, b);
 end
 
 ISUIElement.isMouseOverAnyUI = function()

@@ -29,7 +29,7 @@ if not EQUIPMENT_UI_SETTINGS then
             self.WEAPON_SLOT_PRIMARY_SIZE = 32 * scale
             self.WEAPON_SLOT_SECONDARY_SIZE = 24 * scale
             
-            self.WEAPON_SLOT_PRIMARY_OFFSET = 21 * scale
+            self.WEAPON_SLOT_PRIMARY_OFFSET = 22 * scale
             self.WEAPON_SLOT_SECONDARY_X_OFFSET = 25 * scale
             self.WEAPON_SLOT_SECONDARY_Y_OFFSET = 17 * scale
             
