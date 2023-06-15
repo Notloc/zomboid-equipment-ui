@@ -136,7 +136,7 @@ end
 EquipmentSlot.openItemContextMenu = function(uiContext, x, y, item, playerNum)
     local container = item:getContainer()
     local isInInv = container and container:isInCharacterInventory(getSpecificPlayer(playerNum))
-    local menu = ISInventoryPaneContextMenu.createMenu(playerNum, isInInv, { item }, uiContext:getAbsoluteX()+x, uiContext:getAbsoluteY()+y)
+    local menu = ISInventoryPaneContextMenu.createMenu(playerNum, isInInv, NotUtil.createVanillaStackFromItem(item), uiContext:getAbsoluteX()+x, uiContext:getAbsoluteY()+y)
 
     if menu and menu.numOptions > 1 and JoypadState.players[playerNum+1] then
         menu.origin = self.inventoryPage
@@ -146,8 +146,11 @@ EquipmentSlot.openItemContextMenu = function(uiContext, x, y, item, playerNum)
 end
 
 function EquipmentSlot.getItemColor(item)
-    if not item or not item:allowRandomTint() then
+    if not item then
         return 1,1,1
+    end
+    if not item:allowRandomTint() then
+        return item:getR(), item:getG(), item:getB()
     end
 
     local colorInfo = item:getColorInfo()

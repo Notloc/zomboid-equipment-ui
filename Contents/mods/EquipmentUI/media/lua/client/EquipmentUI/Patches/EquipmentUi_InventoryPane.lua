@@ -4,9 +4,9 @@ local og_updateTooltip = ISInventoryPane.updateTooltip
 function ISInventoryPane:updateTooltip()
 	if self.parent:isMouseOverEquipmentUi() then
 		return self.parent.equipmentUi:updateTooltip()
+	else
+		og_updateTooltip(self)
 	end
-
-	return og_updateTooltip(self)
 end
 
 function ISInventoryPane:doTooltipForItem(item)

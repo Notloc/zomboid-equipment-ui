@@ -114,8 +114,11 @@ function WeaponSlot:render()
 end
 
 function WeaponSlot.getItemColor(item)
-    if not item or not item:allowRandomTint() then
+    if not item then
         return 1,1,1
+    end
+    if not item:allowRandomTint() then
+        return item:getR(), item:getG(), item:getB()
     end
 
     local colorInfo = item:getColorInfo()
