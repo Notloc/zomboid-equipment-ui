@@ -298,7 +298,7 @@ function EquipmentSuperSlot:onRightMouseUp(x, y)
 
     local item = self:getNthItem(index);
     if item then
-        EquipmentSlot.openItemContextMenu(self, x, y, item, self.playerNum)
+        EquipmentSlot.openItemContextMenu(self, x, y, item, self.inventoryPane, self.playerNum)
         return true
     end
 end

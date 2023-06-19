@@ -104,7 +104,7 @@ end
 function HotbarSlot:onRightMouseUp(x, y)
     local item = self:getItem()
     if item then
-        EquipmentSlot.openItemContextMenu(self, x, y, item, self.playerNum)
+        EquipmentSlot.openItemContextMenu(self, x, y, item, self.inventoryPane, self.playerNum)
     end
 end
 

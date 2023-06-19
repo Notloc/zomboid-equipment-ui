@@ -74,7 +74,7 @@ end
 
 function EquipmentSlot:onRightMouseUp(x, y)
     if self.item then
-        EquipmentSlot.openItemContextMenu(self, x, y, self.item, self.playerNum);
+        EquipmentSlot.openItemContextMenu(self, x, y, self.item, self.inventoryPane, self.playerNum);
     end
 end
 
@@ -133,10 +133,10 @@ EquipmentSlot.getBodyLocationForItem = function(item)
     return location
 end
 
-EquipmentSlot.openItemContextMenu = function(uiContext, x, y, item, playerNum)
+EquipmentSlot.openItemContextMenu = function(uiContext, x, y, item, invPane, playerNum)
     local container = item:getContainer()
     local isInInv = container and container:isInCharacterInventory(getSpecificPlayer(playerNum))
-    local menu = ISInventoryPaneContextMenu.createMenu(playerNum, isInInv, NotUtil.createVanillaStackFromItem(item), uiContext:getAbsoluteX()+x, uiContext:getAbsoluteY()+y)
+    local menu = ISInventoryPaneContextMenu.createMenu(playerNum, isInInv, NotUtil.createVanillaStacksFromItems({item}, invPane), uiContext:getAbsoluteX()+x, uiContext:getAbsoluteY()+y)
 
     if menu and menu.numOptions > 1 and JoypadState.players[playerNum+1] then
         menu.origin = self.inventoryPage

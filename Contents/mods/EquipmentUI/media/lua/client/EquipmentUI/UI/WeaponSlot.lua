@@ -139,7 +139,7 @@ end
 function WeaponSlot:onRightMouseUp(x, y)
     local item = self:getHandItem();
     if item then
-        EquipmentSlot.openItemContextMenu(self, x, y, item, self.playerNum);
+        EquipmentSlot.openItemContextMenu(self, x, y, item, self.inventoryPane, self.playerNum);
     end
 end
 
