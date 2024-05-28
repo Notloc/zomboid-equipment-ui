@@ -75,8 +75,10 @@ function NotlocScrollView:prerender()
     local xScroll = self:getXScroll()
     local yScroll = self:getYScroll()
 
-    if self.width - self.scrollwidth > xScroll then
-        xScroll = math.min(0, self.width - self.scrollwidth)
+    local scrollAreaWidth = self:getScrollAreaWidth()
+
+    if scrollAreaWidth - self.scrollwidth > xScroll then
+        xScroll = math.min(0, scrollAreaWidth - self.scrollwidth)
         self:setXScroll(xScroll)
     end
 
@@ -107,4 +109,3 @@ function NotlocScrollView:onMouseWheel(del)
 	self:setYScroll(self:getYScroll() - (del * self.scrollSensitivity));
     return true;
 end
-
