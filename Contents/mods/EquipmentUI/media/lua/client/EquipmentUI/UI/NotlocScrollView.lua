@@ -72,15 +72,23 @@ function NotlocScrollView:prerender()
     self:setStencilRect(0, 0, self.width, self.height);
     self:updateScrollbars();
 
-    local deltaX = self:getXScroll() - self.lastX
-    local deltaY = self:getYScroll() - self.lastY
+    local xScroll = self:getXScroll()
+    local yScroll = self:getYScroll()
+
+    if self.width - self.scrollwidth > xScroll then
+        xScroll = math.min(0, self.width - self.scrollwidth)
+        self:setXScroll(xScroll)
+    end
+
+    local deltaX = xScroll - self.lastX
+    local deltaY = yScroll - self.lastY
     for _, child in pairs(self.scrollChildren) do
         child:setX(child:getX() + deltaX)
         child:setY(child:getY() + deltaY)
     end
 
-    self.lastX = self:getXScroll()
-    self.lastY = self:getYScroll()
+    self.lastX = xScroll
+    self.lastY = yScroll
 
 	ISUIElement.prerender(self)
 end
@@ -91,7 +99,11 @@ function NotlocScrollView:render()
 end
 
 function NotlocScrollView:onMouseWheel(del)
-    --if self.inventoryPage.isCollapsed then return false; end
+    -- if the ctrl key is held down, scroll horizontally
+    if isCtrlKeyDown() then
+        self:setXScroll(self:getXScroll() - (del * self.scrollSensitivity));
+        return true;
+    end
 	self:setYScroll(self:getYScroll() - (del * self.scrollSensitivity));
     return true;
 end
