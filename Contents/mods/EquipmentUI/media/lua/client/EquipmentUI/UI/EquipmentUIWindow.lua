@@ -1,4 +1,4 @@
-require "ISUI/ISPanelJoypad"
+require "ISUI/ISPanel"
 local c = require "EquipmentUI/Settings"
 
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
@@ -21,11 +21,11 @@ local function getLayoutModData(playerObj)
     return modData;
 end
 
-EquipmentUIWindow = ISPanelJoypad:derive("EquipmentUIWindow");
+EquipmentUIWindow = ISPanel:derive("EquipmentUIWindow");
 
 function EquipmentUIWindow:new(x, y, inventoryPane, playerNum)
 	local o = {};
-	o = ISPanelJoypad:new(x, y, c.EQUIPMENT_WIDTH + 12, inventoryPane.parent:getHeight());
+	o = ISPanel:new(x, y, c.EQUIPMENT_WIDTH + 12, inventoryPane.parent:getHeight());
 	setmetatable(o, self);
     self.__index = self;
 
@@ -50,7 +50,7 @@ function EquipmentUIWindow:new(x, y, inventoryPane, playerNum)
 end
 
 function EquipmentUIWindow:createChildren()
-    ISPanelJoypad.createChildren(self);
+    ISPanel.createChildren(self);
 
     local titleBarHeight = self.inventoryPane.parent:titleBarHeight()
 
@@ -145,7 +145,7 @@ function EquipmentUIWindow:prerender()
     self.equipmentUi:setX(xOffset);
 
     if not self.isCollapsed then
-	    ISPanelJoypad.prerender(self)
+	    ISPanel.prerender(self)
     end
 
     local titleBarHeight = self.inventoryPane.parent:titleBarHeight()
@@ -161,7 +161,11 @@ function EquipmentUIWindow:prerender()
 end
 
 function EquipmentUIWindow:render()
-    ISPanelJoypad.render(self)
+    ISPanel.render(self)
+    if self.joyfocus then
+        self:drawRectBorder(0, 0, self:getWidth(), self:getHeight(), 0.4, 0.2, 1.0, 1.0);
+        self:drawRectBorder(1, 1, self:getWidth()-2, self:getHeight()-2, 0.4, 0.2, 1.0, 1.0);
+    end
 end
 
 function EquipmentUIWindow:onInventoryVisibilityChanged(isVisible)
@@ -375,4 +379,22 @@ end
 
 function EquipmentUIWindow:updateTooltip()
     self.equipmentUi:updateTooltip();
+end
+
+-- Controller Window focus handling
+function EquipmentUIWindow:onJoypadDirLeft()
+    setJoypadFocus(self.playerNum, getPlayerLoot(self.playerNum));
+end
+
+function EquipmentUIWindow:onJoypadDirRight()
+    setJoypadFocus(self.playerNum, getPlayerInventory(self.playerNum));
+end
+
+
+function EquipmentUIWindow:onJoypadDown(button)
+    -- Makes the ui close
+    if button == Joypad.YButton then
+        setJoypadFocus(self.playerNum, nil);
+        getPlayerInventory(self.playerNum):onLoseJoypadFocus(nil)
+    end
 end
