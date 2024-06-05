@@ -177,7 +177,7 @@ end
 
 function EquipmentUI:updateHotbarSlots()
     self:disableHotbarSlots()
-    
+
     local hotbar = getPlayerHotbar(self.playerNum)
     if not hotbar then -- We're probably dead and 1 frame away from this ui getting destroyed
         return
@@ -208,9 +208,9 @@ end
 
 function EquipmentUI:createHotbarSlot(hotbar)
     local newSlot = nil
-    if #self.hotbarSlotPool > 0 then
-        newSlot = self.hotbarSlotPool[#self.hotbarSlotPool]
-        table.remove(self.hotbarSlotPool, #self.hotbarSlotPool)
+    if #self.hotbarSlotPool > 0 then -- Used to remove from the end, but we do the front now for controller support
+        newSlot = self.hotbarSlotPool[1] -- Kind of a lazy fix, but we refresh these every frame so they can't be changing order
+        table.remove(self.hotbarSlotPool, 1) -- Eventually need to rewrite this to only update the slots that changed
         newSlot:setVisible(true)
         
     else
@@ -227,12 +227,10 @@ function EquipmentUI:disableHotbarSlots()
     for _, slot in pairs(self.hotbarSlots) do
         slot:setVisible(false)
         slot.index = nil
-        table.insert(self.hotbarSlotPool, slot)
+        table.insert(self.hotbarSlotPool, slot) 
     end
-    self.hotbarSlots = {}
+    table.wipe(self.hotbarSlots)
 end
-
-
 
 function EquipmentUI:prerender()
     self:renderHeaderCentered(getText("UI_equipment_equipment"), 12)
@@ -305,4 +303,20 @@ function EquipmentUI:closeTooltip()
         self.inventoryPane.toolRender:setVisible(false)
         self.tooltipOwner = nil
     end
+end
+
+function EquipmentUI:getControllerNodes()
+    local nodes = {}
+    for _, slot in pairs(self.dynamicSlots) do
+        table.insert(nodes, slot.controllerNode)
+    end
+    for _, slot in pairs(self.superSlots) do
+        table.insert(nodes, slot.controllerNode)
+    end
+    for _, slot in pairs(self.hotbarSlots) do
+        table.insert(nodes, slot.controllerNode)
+    end
+    table.insert(nodes, self.primarySlot.controllerNode)
+    table.insert(nodes, self.secondarySlot.controllerNode)
+    return nodes
 end

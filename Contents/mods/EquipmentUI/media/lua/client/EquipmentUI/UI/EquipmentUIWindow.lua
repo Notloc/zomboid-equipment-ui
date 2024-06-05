@@ -118,6 +118,10 @@ function EquipmentUIWindow:createChildren()
     if self.playerNum == 0 then
 		ISLayoutManager.RegisterWindow('equipment_ui_mod', EquipmentUIWindow, self)
 	end
+
+    NotlocControllerNode
+        :injectControllerNode(self, true)
+        :setChildrenNodeProvider(self.equipmentUi.getControllerNodes, self.equipmentUi)
 end
 
 function EquipmentUIWindow:prerender()
@@ -390,11 +394,16 @@ function EquipmentUIWindow:onJoypadDirRight()
     setJoypadFocus(self.playerNum, getPlayerInventory(self.playerNum));
 end
 
-
 function EquipmentUIWindow:onJoypadDown(button)
     -- Makes the ui close
     if button == Joypad.YButton then
         setJoypadFocus(self.playerNum, nil);
         getPlayerInventory(self.playerNum):onLoseJoypadFocus(nil)
+    end
+
+    if button == Joypad.Back then
+        local inv = getPlayerInventory(self.playerNum)
+        inv:toggleEquipmentUIForController();
+        setJoypadFocus(self.playerNum, inv);
     end
 end

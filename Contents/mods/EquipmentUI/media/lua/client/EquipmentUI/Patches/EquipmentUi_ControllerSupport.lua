@@ -16,25 +16,28 @@ function ISInventoryPage:onJoypadDown(button)
     og_ISInventoryPage_onJoypadDown(self, button)
 
     local playerObj = getSpecificPlayer(self.player) 
-    if button == Joypad.Back and self.equipmentUi then
+    if button == Joypad.Back then
         self:toggleEquipmentUIForController()
     end
 end
 
 -- Resize UIs when toggling the equipment UI
 function ISInventoryPage:toggleEquipmentUIForController()
-    self.equipmentUi.isClosed = not self.equipmentUi.isClosed
-    self.equipmentUi:setVisible(not self.equipmentUi.isClosed)
-
     local inventoryPage = getPlayerInventory(self.player)
     local lootPage = getPlayerLoot(self.player)
+    local equipmentUi = inventoryPage.equipmentUi
+    if not equipmentUi then return end
+
+    equipmentUi.isClosed = not equipmentUi.isClosed
+    equipmentUi:setVisible(not equipmentUi.isClosed)
+
 
     local x = getPlayerScreenLeft(self.player)
     local w = getPlayerScreenWidth(self.player)
 
-    if not self.equipmentUi.isClosed then
-        x = x + self.equipmentUi:getWidth()
-        w = w - self.equipmentUi:getWidth()
+    if not equipmentUi.isClosed then
+        x = x + equipmentUi:getWidth()
+        w = w - equipmentUi:getWidth()
     end
 
     inventoryPage:setWidth(w/2)

@@ -45,7 +45,7 @@ function ISInventoryPane:doTooltipForItem(item)
 			self.toolRender:setCharacter(getSpecificPlayer(self.player))
 			self.toolRender.anchorBottomLeft = { x = self:getAbsoluteX() + self.column2, y = self:getParent():getAbsoluteY() }
 		end
-		self.toolRender.followMouse = not self.doController
+		self.toolRender.followMouse = not self.doController and not self.parent.equipmentUi.controllerNode.isFocused
 		self.toolRender.tooltip:setWeightOfStack(weightOfStack)
 	elseif self.toolRender then
 		self.toolRender:removeFromUIManager()

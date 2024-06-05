@@ -1,6 +1,7 @@
 require "IS/UI/ISPanel"
 local c = require "EquipmentUI/Settings"
 local BG_TEXTURE = getTexture("media/ui/equipmentui/ItemSlot.png")
+local BG_COLOR = {r=0.4, g=0.4, b=0.4}
 
 HotbarSlot = ISPanel:derive("HotbarSlot");
 
@@ -22,6 +23,13 @@ function HotbarSlot:new(hotbar, equipmentUi, inventoryPane, playerNum)
 	return o;
 end
 
+function HotbarSlot:initialise()
+    ISPanel.initialise(self);
+    NotlocControllerNode
+        :injectControllerNode(self)
+        :setJoypadDownHandler(self.controllerNodeOnJoypadDown)
+end
+
 function HotbarSlot:getItem()
    return self.hotbar.attachedItems[self.index] 
 end
@@ -33,8 +41,10 @@ function HotbarSlot:prerender()
 
     local itemCount = 0;
 
+    local color = self.controllerNode.isFocused and NotlocControllerNode.FOCUS_COLOR or BG_COLOR;
+
     self:drawRect(0, 0, c.SUPER_SLOT_SIZE, c.SUPER_SLOT_SIZE, 0.65, 0, 0, 0);
-    self:drawTextureScaled(BG_TEXTURE, 0, 0, c.SUPER_SLOT_SIZE, c.SUPER_SLOT_SIZE, 1, 0.4, 0.4, 0.4);
+    self:drawTextureScaled(BG_TEXTURE, 0, 0, c.SUPER_SLOT_SIZE, c.SUPER_SLOT_SIZE, 1, color.r, color.g, color.b);
     self:drawRectBorder(0, 0, c.SUPER_SLOT_SIZE, c.SUPER_SLOT_SIZE, 1, 1, 1, 1);
 
     local dragItem = DragAndDrop.getDraggedItem();
@@ -56,7 +66,7 @@ function HotbarSlot:render()
     local item = self:getItem()
   
     --if the mouse is over the super slot, draw the name of the slot
-    if self:isMouseOver() then
+    if self:isMouseOver() or self.controllerNode.isFocused then
 
         local slot = self.hotbar.availableSlot[self.index]
         local name = getTextOrNull("IGUI_HotbarAttachment_" .. slot.slotType) or slot.name;
@@ -198,4 +208,23 @@ function HotbarSlot:dropOrUnequip()
             ISInventoryPaneContextMenu.dropItem(item, self.playerNum)
         end
     end
+end
+
+function HotbarSlot:controllerNodeOnJoypadDown(button)
+    local item = self:getItem()
+    if button == Joypad.XButton then
+        if item then
+            self.hotbar:removeItem(item, true)
+        end
+        return true
+    end
+    if button == Joypad.AButton then
+        if item then
+            local x = self.width
+            local y = self.height/2
+            EquipmentSlot.openItemContextMenu(self, x, y, item, self.inventoryPane, self.playerNum)
+        end
+        return true
+    end
+    return false
 end

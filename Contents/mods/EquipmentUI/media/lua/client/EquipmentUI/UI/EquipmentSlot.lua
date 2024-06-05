@@ -1,5 +1,6 @@
 require "IS/UI/ISPanel"
 local c = require "EquipmentUI/Settings"
+local BG_COLOR = {r=0, g=0, b=0, a=0.95}
 
 EquipmentSlot = ISPanel:derive("EquipmentSlot");
 
@@ -12,13 +13,13 @@ function EquipmentSlot:new(x, y, bodyLocation, equipmentUi, inventoryPane, playe
 	o.y = y;
 
     o.borderColor = {r=0.4, g=0.4, b=0.4, a=1};
-    o.backgroundColor = {r=0, g=0, b=0, a=0.95};
+    o.backgroundColor = BG_COLOR
 
     o.bodyLocation = bodyLocation;
     o.equipmentUi = equipmentUi;
     o.inventoryPane = inventoryPane;
     o.playerNum = playerNum;
-    
+
     o.bodyLocationGroup = getSpecificPlayer(playerNum):getWornItems():getBodyLocationGroup();
 
 	return o;
@@ -31,6 +32,10 @@ function EquipmentSlot:initialise()
         self:setWidth(c.SLOT_SIZE)
         self:setHeight(c.SLOT_SIZE)
     end);
+
+    NotlocControllerNode
+        :injectControllerNode(self)
+        :setJoypadDownHandler(self.controllerNodeOnJoypadDown)
 end
 
 function EquipmentSlot:setItem(item)
@@ -42,8 +47,10 @@ function EquipmentSlot:clearItem()
 end
 
 function EquipmentSlot:prerender()
+    local hasControllerFocus = self.controllerNode and self.controllerNode.isFocused
+    self.backgroundColor = hasControllerFocus and NotlocControllerNode.FOCUS_COLOR or BG_COLOR
     ISPanel.prerender(self);
-    
+
     local dragItem = DragAndDrop.getDraggedItem();
     if dragItem and dragItem ~= self.item then
         local bodyLocation = EquipmentSlot.getBodyLocationForItem(dragItem);
@@ -60,14 +67,14 @@ function EquipmentSlot:render()
     if not self.item then
         return
     end
-    
+
     local alpha = 1
     if self.item == DragAndDrop.getDraggedItem() then
         alpha = 0.5
     end
 
     self:drawTextureScaledUniform(self.item:getTex(), 1, 1, c.SCALE, alpha, self.getItemColor(self.item));
-    if self:isMouseOver() then
+    if self:isMouseOver() or self.controllerNode.isFocused then
         self.equipmentUi:doTooltipForItem(self, self.item);
     end
 end
@@ -139,9 +146,7 @@ EquipmentSlot.openItemContextMenu = function(uiContext, x, y, item, invPane, pla
     local menu = ISInventoryPaneContextMenu.createMenu(playerNum, isInInv, NotUtil.createVanillaStacksFromItems({item}, invPane), uiContext:getAbsoluteX()+x, uiContext:getAbsoluteY()+y)
 
     if menu and menu.numOptions > 1 and JoypadState.players[playerNum+1] then
-        menu.origin = self.inventoryPage
-        menu.mouseOver = 1
-        setJoypadFocus(playerNum, menu)
+        uiContext.controllerNode:focusContextMenu(playerNum, menu)
     end
 end
 
@@ -166,4 +171,21 @@ function EquipmentSlot.getItemColor(item)
         b = b + limit / 4
     end
     return r,g,b
+end
+
+function EquipmentSlot:controllerNodeOnJoypadDown(button)
+    if button == Joypad.XButton then
+        self:unequip()
+        return true
+    end
+    if button == Joypad.AButton then
+        local item = self.item
+        if item then
+            local x = self.width
+            local y = self.height/2
+            EquipmentSlot.openItemContextMenu(self, x, y, item, self.inventoryPane, self.playerNum)
+        end
+        return true
+    end
+    return false
 end

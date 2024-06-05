@@ -1,3 +1,3 @@
-name=Equipment UI
-id=EQUIPMENT_UI
-description= A Tarkov/STALKER style equipment interface for Zomboid.
+name=Equipment UI - UNSTABLE
+id=EQUIPMENT_UI_DEV
+description= A paperdoll style equipment interface for Zomboid.

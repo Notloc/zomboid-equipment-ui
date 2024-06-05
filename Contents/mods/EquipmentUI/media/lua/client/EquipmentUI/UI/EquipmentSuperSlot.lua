@@ -5,6 +5,7 @@ local BG_TEXTURE = getTexture("media/ui/equipmentui/ItemSlot.png")
 local MAX_COLUMN = 3
 local MINI_ICON_SCALE = 0.375
 local MINI_ICON_SIZE = 32 * MINI_ICON_SCALE
+local BG_COLOR = { r = 0.4, g = 0.4, b = 0.4 }
 
 EquipmentSuperSlot = ISPanel:derive("EquipmentSuperSlot");
 
@@ -42,6 +43,14 @@ function EquipmentSuperSlot:initialise()
         self:setWidth(c.SUPER_SLOT_SIZE + c.SUPER_SLOT_SUB_ITEM_WIDTH);
         self:setHeight(c.SUPER_SLOT_SIZE);
     end)
+
+    NotlocControllerNode
+        :injectControllerNode(self)
+        :setJoypadDownHandler(self.controllerNodeOnJoypadDown)
+        :setLoseJoypadFocusHandler(function()
+            self:setExpanded(false)
+        end)
+        :setChildrenNodeProvider(self.getVisibleControllerNodes, self)
 end
 
 function EquipmentSuperSlot:createChildren()
@@ -71,12 +80,27 @@ function EquipmentSuperSlot:hasItem()
 end
 
 function EquipmentSuperSlot:getTopItem()
+    local slot = self:getTopSlot();
+    return slot and slot.item or nil;
+end
+
+function EquipmentSuperSlot:getTopSlot()
     for _, slot in pairs(self.slots) do
         if slot.item then
-            return slot.item;
+            return slot;
         end
     end
     return nil;
+end
+
+function EquipmentSuperSlot:getVisibleControllerNodes()
+    local slots = {}
+    for _, slot in pairs(self.slots) do
+        if slot:isVisible() then
+            table.insert(slots, slot.controllerNode)
+        end
+    end
+    return slots
 end
 
 function EquipmentSuperSlot:getNthItem(index)
@@ -130,18 +154,22 @@ end
 
 function EquipmentSuperSlot:prerender()
     local itemCount = self:getItemCount();
+
+    local hasControllerFocus = self.controllerNode and self.controllerNode.isFocused
+    local bgColor = hasControllerFocus and NotlocControllerNode.FOCUS_COLOR or BG_COLOR
+
     if itemCount > 0 then
         local slotWidth = (itemCount > 1 and c.SUPER_SLOT_SIZE + c.SUPER_SLOT_SUB_ITEM_WIDTH or c.SUPER_SLOT_SIZE);
-        
+
         self:drawRect(0, 0, slotWidth, c.SUPER_SLOT_SIZE, 0.85, 0, 0, 0);
-        self:drawTextureScaled(BG_TEXTURE, 0, 0, slotWidth, c.SUPER_SLOT_SIZE, 1, 0.4, 0.4, 0.4);
+        self:drawTextureScaled(BG_TEXTURE, 0, 0, slotWidth, c.SUPER_SLOT_SIZE, 1, bgColor.r, bgColor.g, bgColor.b);
         self:drawRectBorder(0, 0, slotWidth, c.SUPER_SLOT_SIZE, 1, 1, 1, 1);
     else
         self:drawRect(0, 0, c.SUPER_SLOT_SIZE, c.SUPER_SLOT_SIZE, 0.65, 0, 0, 0);
-        self:drawTextureScaled(BG_TEXTURE, 0, 0, c.SUPER_SLOT_SIZE, c.SUPER_SLOT_SIZE, 1, 0.4, 0.4, 0.4);
+        self:drawTextureScaled(BG_TEXTURE, 0, 0, c.SUPER_SLOT_SIZE, c.SUPER_SLOT_SIZE, 1, bgColor.r, bgColor.g, bgColor.b);
         self:drawRectBorder(0, 0, c.SUPER_SLOT_SIZE, c.SUPER_SLOT_SIZE, 1, 1, 1, 1);
     end
-    
+
     local dragItem = DragAndDrop.getDraggedItem();
     if dragItem then
         local bodyLocation = EquipmentSlot.getBodyLocationForItem(dragItem);
@@ -194,10 +222,10 @@ function EquipmentSuperSlot:layoutSlots()
             slot:setVisible(true);
             slot:setX((column * c.SLOT_SIZE) + 2 - column);
             slot:setY((c.SUPER_SLOT_SIZE + c.SUPER_SLOT_VERTICAL_OFFSET + row * c.SLOT_SIZE) + 2 - row);
-            
+
             self.visibleSlots = self.visibleSlots + 1;
             column = column + 1;
-            
+
             if column >= 3 then
                 column = 0;
                 row = row + 1;
@@ -210,22 +238,23 @@ end
 
 function EquipmentSuperSlot:render()
     --if the mouse is over the super slot, draw the name of the slot
-    if self:isMouseOver() then
+    if self:isMouseOver() or self.controllerNode.isFocused then
         local name = getText(self.slotDefinition.name);
         local width = getTextManager():MeasureStringX(UIFont.Small, name);
         local height = getTextManager():getFontFromEnum(UIFont.Small):getLineHeight();
-        
+
         local center = c.SUPER_SLOT_SIZE / 2
         local x = center - width / 2 - 3
         local y = -height - 2
 
         self:drawRect(x, y, width + 8, height+4, 0.9, 0, 0, 0);
+
         self:drawRectBorder(x, y, width + 8, height+4, 1, 1, 1, 1);
         self:drawTextCentre(name, center, y, 1, 1, 1, 1, UIFont.Small);
     end
 
     local itemsToDraw = {};
-    
+
     local index = 1;
     for _, bodyLocation in ipairs(self.slotDefinition.bodyLocations) do
         local slot = self.slots[bodyLocation];
@@ -248,7 +277,7 @@ function EquipmentSuperSlot:render()
         mainAlpha = 0.5;
     end
     self:drawTextureScaledUniform(itemsToDraw[1]:getTex(), xOff + c.SCALE, yOff + c.SCALE, c.SCALE, mainAlpha, EquipmentSlot.getItemColor(itemsToDraw[1]));
-  
+
     if count > 1 then
         local slotSize = c.SUPER_SLOT_SIZE + c.SUPER_SLOT_SUB_ITEM_WIDTH
         local scaledSize = MINI_ICON_SIZE * c.SCALE
@@ -261,7 +290,9 @@ function EquipmentSuperSlot:render()
         self:drawRectBorder(c.SUPER_SLOT_SIZE - 1, 0, c.SUPER_SLOT_SUB_ITEM_WIDTH + 1, c.SUPER_SLOT_SIZE, 1, 1, 1, 1);
     end
 
-    if not DragAndDrop.isDragging() and self:isMouseOver() then
+    local isController = self.controllerNode.isFocused
+
+    if not isController and not DragAndDrop.isDragging() and self:isMouseOver() then
         local x = self:getMouseX();
         local y = self:getMouseY();
 
@@ -275,6 +306,10 @@ function EquipmentSuperSlot:render()
         else
             self.equipmentUi:closeTooltip();
         end
+    end
+
+    if isController and not self.controllerNode.selectedChild then
+        self.equipmentUi:doTooltipForItem(self, itemsToDraw[1]);
     end
 end
 
@@ -374,7 +409,7 @@ function EquipmentSuperSlot:handleSlotClick(x, y)
         self:toggleExpanded();
     end
     ISPanel.onMouseUp(self, x, y);
-    
+
     if self.parentX then
         print(self:getAbsoluteX() - self.parentX:getAbsoluteX(), ", ", self:getAbsoluteY() - self.parentX:getAbsoluteY());
     end
@@ -403,6 +438,12 @@ function EquipmentSuperSlot:setExpanded(expanded)
 
     if self.expanded then
         self:bringToTop();
+        local firstSlot = self:getTopSlot()
+        if firstSlot then
+            self.controllerNode:setSelectedChild(firstSlot.controllerNode);
+        end
+    else
+        self.controllerNode:setSelectedChild(nil);
     end
 end
 
@@ -426,4 +467,32 @@ function EquipmentSuperSlot:dropOrUnequip()
             ISInventoryPaneContextMenu.dropItem(item, self.playerNum)
         end
     end
+end
+
+function EquipmentSuperSlot:unequip()
+    local item = self:getTopItem()
+    if item then
+        ISInventoryPaneContextMenu.unequipItem(item, self.playerNum)
+    end
+end
+
+function EquipmentSuperSlot:controllerNodeOnJoypadDown(button)
+    if button == Joypad.BButton then
+        self:toggleExpanded()
+        return true
+    end
+    if button == Joypad.XButton then
+        self:unequip()
+        return true
+    end
+    if button == Joypad.AButton then
+        local item = self:getTopItem()
+        if item then
+            local x = self.width
+            local y = self.height/2
+            EquipmentSlot.openItemContextMenu(self, x, y, item, self.inventoryPane, self.playerNum)
+        end
+        return true
+    end
+    return false
 end
