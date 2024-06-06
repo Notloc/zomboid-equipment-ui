@@ -18,7 +18,7 @@ end
 if ModOptions and ModOptions.getInstance then
     local settings = ModOptions:getInstance(EQUIPMENT_UI_MOD_OPTIONS)
     ModOptions:loadFile() -- Load the mod options file right away
-    
+
     local uiScale = settings:getData("EQUIPMENT_UI_SCALE_INDEX")
     uiScale[1] = getText("0.5x")
     uiScale[2] = getText("1x")
@@ -35,14 +35,14 @@ if ModOptions and ModOptions.getInstance then
     end
 
     EQUIPMENT_UI_SETTINGS:applyScale(EQUIPMENT_UI_MOD_OPTIONS.options.EQUIPMENT_UI_SCALE_INDEX * 0.5)
-    
-    
+
+
     local hideEquippedItems = settings:getData("HIDE_EQUIPPED_ITEMS")
 
     function hideEquippedItems:OnApplyInGame(val)
         EQUIPMENT_UI_MOD_OPTIONS.options.HIDE_EQUIPPED_ITEMS = val
         EQUIPMENT_UI_SETTINGS:applyHideEquippedItems(val)
     end
-    
+
     EQUIPMENT_UI_SETTINGS:applyHideEquippedItems(EQUIPMENT_UI_MOD_OPTIONS.options.HIDE_EQUIPPED_ITEMS)
 end

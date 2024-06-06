@@ -234,6 +234,32 @@ function NotlocControllerNode:setSelectedChild(childNode)
     end
 end
 
+function NotlocControllerNode:validateSelectedChild()
+    if not self.selectedChild then
+        return true
+    end
+
+    local children = self.childrenNodeProvider and self.childrenNodeProvider(unpack(self.childrenNodeProviderArgs)) or {}
+    for _, child in ipairs(children) do
+        if child == self.selectedChild then
+            return true
+        end
+    end
+    return false
+end
+
+function NotlocControllerNode:refreshSelectedChild()
+    if self:validateSelectedChild() then
+        return
+    end
+
+    local children = self.childrenNodeProvider and self.childrenNodeProvider(unpack(self.childrenNodeProviderArgs)) or {}
+    self.selectedChild = children[1]
+    if self.selectedChild then
+        self.selectedChild:onGainJoypadFocus()
+    end
+end
+
 -- No early returns here, everything needs to know when the focus is lost/gained
 function NotlocControllerNode:onLoseJoypadFocus(joypadData)
     -- We do not process the controllerNode lose focus events when opening a context menu
@@ -258,6 +284,16 @@ end
 
 function NotlocControllerNode:onGainJoypadFocus(joypadData)
     self.isFocused = true
+
+    if self.selectedChild and not self:validateSelectedChild() then
+        self.selectedChild = nil -- No onLoseJoypadFocus because it shouldn't have focus in the first place at this point
+    end
+
+    if not self.selectedChild then
+        local children = self.childrenNodeProvider and self.childrenNodeProvider(unpack(self.childrenNodeProviderArgs)) or {}
+        self.selectedChild = children[1]
+    end
+
     if self.selectedChild then
         self.selectedChild:onGainJoypadFocus()
     else
@@ -283,32 +319,10 @@ function NotlocControllerNode.ensureVisible(uiElement)
     local current = uiElement.parent
     while current do
         if current.Type == "NotlocScrollView" then
-            NotlocControllerNode.ensureUiElementIsVisibleInScrollView(uiElement, current)
+            current:ensureChildIsVisible(uiElement, 50)
             return
         end
         current = current.parent
     end
 end
 
-function NotlocControllerNode.ensureUiElementIsVisibleInScrollView(uiElement, scrollView)
-    local padding = uiElement.scrollPadding or 50
-
-    local y = uiElement:getAbsoluteY()
-    y = y - scrollView:getAbsoluteY()
-
-    local height = uiElement:getHeight()
-    local y2 = y + height
-
-    local sY = 0
-    local sY2 = scrollView:getHeight()
-
-    local scrollY = scrollView:getYScroll()
-
-    if y2 + padding > sY2 then
-        local yD = y2 + padding - sY2
-        scrollView:setYScroll(scrollY - yD)
-    elseif y - padding < sY then
-        local yD = y - padding - sY
-        scrollView:setYScroll(scrollY - yD)
-    end
-end

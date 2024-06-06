@@ -109,3 +109,26 @@ function NotlocScrollView:onMouseWheel(del)
 	self:setYScroll(self:getYScroll() - (del * self.scrollSensitivity));
     return true;
 end
+
+function NotlocScrollView:ensureChildIsVisible(uiElement, padding)
+    padding = padding or 50
+
+    local y = uiElement:getAbsoluteY()
+    y = y - self:getAbsoluteY()
+
+    local height = uiElement:getHeight()
+    local y2 = y + height
+
+    local sY = 0
+    local sY2 = self:getHeight()
+
+    local scrollY = self:getYScroll()
+
+    if y2 + padding > sY2 then
+        local yD = y2 + padding - sY2
+        self:setYScroll(scrollY - yD)
+    elseif y - padding < sY then
+        local yD = y - padding - sY
+        self:setYScroll(scrollY - yD)
+    end
+end
