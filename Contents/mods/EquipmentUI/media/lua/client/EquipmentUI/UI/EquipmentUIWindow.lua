@@ -325,7 +325,7 @@ function EquipmentUIWindow:onMouseMoveOutside(dx, dy)
             self.collapseCounter = 1000
         end
 
-        if self.collapseCounter > 120 and not self.isCollapsed and bDo then
+        if self.collapseCounter > 120 and not self.isCollapsed then
             self:collapseWindow();
         end
     end
