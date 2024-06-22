@@ -64,36 +64,37 @@ function HotbarSlot:render()
         return
     end
     local item = self:getItem()
-  
+
     --if the mouse is over the super slot, draw the name of the slot
     if self:isMouseOver() or self.controllerNode.isFocused then
-
         local slot = self.hotbar.availableSlot[self.index]
-        local name = getTextOrNull("IGUI_HotbarAttachment_" .. slot.slotType) or slot.name;
+        if slot then
+            local name = getTextOrNull("IGUI_HotbarAttachment_" .. slot.slotType) or slot.name;
 
-        local width = getTextManager():MeasureStringX(UIFont.Small, name);
-        local height = getTextManager():getFontFromEnum(UIFont.Small):getLineHeight();
-        
-        local center = c.SUPER_SLOT_SIZE / 2
+            local width = getTextManager():MeasureStringX(UIFont.Small, name);
+            local height = getTextManager():getFontFromEnum(UIFont.Small):getLineHeight();
+
+            local center = c.SUPER_SLOT_SIZE / 2
 
 
-        if center - width / 2 + self.x < 0 then
-            center = width / 2 + 3
-        elseif center + width / 2 + self.x > self.parent:getWidth() then
-            center = c.SUPER_SLOT_SIZE - width / 2 - 3
-        end
+            if center - width / 2 + self.x < 0 then
+                center = width / 2 + 3
+            elseif center + width / 2 + self.x > self.parent:getWidth() then
+                center = c.SUPER_SLOT_SIZE - width / 2 - 3
+            end
 
-        local x = center - width / 2 - 3
-        local y = -height - 2
+            local x = center - width / 2 - 3
+            local y = -height - 2
 
-        self:drawRect(x, y, width + 8, height+4, 0.9, 0, 0, 0);
-        self:drawRectBorder(x, y, width + 8, height+4, 1, 1, 1, 1);
-        self:drawTextCentre(name, center, y, 1, 1, 1, 1, UIFont.Small);
+            self:drawRect(x, y, width + 8, height+4, 0.9, 0, 0, 0);
+            self:drawRectBorder(x, y, width + 8, height+4, 1, 1, 1, 1);
+            self:drawTextCentre(name, center, y, 1, 1, 1, 1, UIFont.Small);
 
-        self:bringToTop();
+            self:bringToTop();
 
-        if item then
-            self.equipmentUi:doTooltipForItem(self, item);
+            if item then
+                self.equipmentUi:doTooltipForItem(self, item);
+            end
         end
     end
 
@@ -169,8 +170,9 @@ end
 
 function HotbarSlot:canAttachItem(item)
     local slot = self.hotbar.availableSlot[self.index]
-    local slotDef = slot.def;
+    if not slot then return false end
 
+    local slotDef = slot.def;
     for i, v in pairs(slotDef.attachments) do
         if item:getAttachmentType() == i then
             local doIt = true;
