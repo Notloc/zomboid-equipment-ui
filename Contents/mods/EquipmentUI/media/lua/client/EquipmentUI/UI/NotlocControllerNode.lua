@@ -73,28 +73,28 @@ end
 
 function NotlocControllerNode:hookJoypadEvents()
     self.og_onJoypadDown = self.uiElement.onJoypadDown
-    self.uiElement.onJoypadDown = function(uiElement, button)
-        self:onJoypadDown(button)
+    self.uiElement.onJoypadDown = function(uiElement, button, joypadData)
+        self:onJoypadDown(button, joypadData)
     end
 
     self.og_onJoypadDirLeft = self.uiElement.onJoypadDirLeft
-    self.uiElement.onJoypadDirLeft = function(uiElement)
-        self:onJoypadDir(-1, 0)
+    self.uiElement.onJoypadDirLeft = function(uiElement, joypadData)
+        self:onJoypadDir(-1, 0, joypadData)
     end
 
     self.og_onJoypadDirRight = self.uiElement.onJoypadDirRight
-    self.uiElement.onJoypadDirRight = function(uiElement)
-        self:onJoypadDir(1, 0)
+    self.uiElement.onJoypadDirRight = function(uiElement, joypadData)
+        self:onJoypadDir(1, 0, joypadData)
     end
 
     self.og_onJoypadDirUp = self.uiElement.onJoypadDirUp
-    self.uiElement.onJoypadDirUp = function(uiElement)
-        self:onJoypadDir(0, -1)
+    self.uiElement.onJoypadDirUp = function(uiElement, joypadData)
+        self:onJoypadDir(0, -1, joypadData)
     end
 
     self.og_onJoypadDirDown = self.uiElement.onJoypadDirDown
-    self.uiElement.onJoypadDirDown = function(uiElement)
-        self:onJoypadDir(0, 1)
+    self.uiElement.onJoypadDirDown = function(uiElement, joypadData)
+        self:onJoypadDir(0, 1, joypadData)
     end
 
     self.og_onLoseJoypadFocus = self.uiElement.onLoseJoypadFocus
@@ -119,30 +119,30 @@ function NotlocControllerNode:unhookJoypadEvents()
 end
 
 -- All joypad events are handled by the controller node and will follow the same pattern as this one
-function NotlocControllerNode:onJoypadDown(button)
+function NotlocControllerNode:onJoypadDown(button, joypadData)
     -- If we have a selected child node, we try to pass the event to it first
-    if self.selectedChild and self.selectedChild:onJoypadDown(button) then
+    if self.selectedChild and self.selectedChild:onJoypadDown(button, joypadData) then
         return true
     end
 
     -- If we have a custom handler for this event, we call it now
-    if self.handleJoypadDown and self.handleJoypadDown(self.uiElement, button) then
+    if self.handleJoypadDown and self.handleJoypadDown(self.uiElement, button, joypadData) then
         return true
     end
 
     -- Lastly, we defer to the original ui element if it has joyfocus
     if self.processRealEvents then
-        self.og_onJoypadDown(self.uiElement, button)
+        self.og_onJoypadDown(self.uiElement, button, joypadData)
     end
     return false
 end
 
-function NotlocControllerNode:onJoypadDir(dx, dy)
-    if self.selectedChild and self.selectedChild:onJoypadDir(dx, dy) then
+function NotlocControllerNode:onJoypadDir(dx, dy, joypadData)
+    if self.selectedChild and self.selectedChild:onJoypadDir(dx, dy, joypadData) then
         return true
     end
 
-    if self.handleJoypadDir and self.handleJoypadDir(self.uiElement, dx, dy) then
+    if self.handleJoypadDir and self.handleJoypadDir(self.uiElement, dx, dy, joypadData) then
         return true
     end
 
@@ -155,13 +155,13 @@ function NotlocControllerNode:onJoypadDir(dx, dy)
 
     if self.processRealEvents then
         if dx == -1 then
-            self.og_onJoypadDirLeft(self.uiElement)
+            self.og_onJoypadDirLeft(self.uiElement, joypadData)
         elseif dx == 1 then
-            self.og_onJoypadDirRight(self.uiElement)
+            self.og_onJoypadDirRight(self.uiElement, joypadData)
         elseif dy == -1 then
-            self.og_onJoypadDirUp(self.uiElement)
+            self.og_onJoypadDirUp(self.uiElement, joypadData)
         elseif dy == 1 then
-            self.og_onJoypadDirDown(self.uiElement)
+            self.og_onJoypadDirDown(self.uiElement, joypadData)
         end
     end
     return false
@@ -225,6 +225,11 @@ function NotlocControllerNode:tryNavigateChildren(children, dx, dy)
 end
 
 function NotlocControllerNode:setSelectedChild(childNode)
+    if not self.isFocused then
+        self.selectedChild = childNode
+        return
+    end
+
     if self.selectedChild then
         self.selectedChild:onLoseJoypadFocus()
     end
@@ -258,6 +263,14 @@ function NotlocControllerNode:refreshSelectedChild()
     if self.selectedChild then
         self.selectedChild:onGainJoypadFocus()
     end
+end
+
+function NotlocControllerNode:getLeafChild()
+    local current = self
+    while current.selectedChild do
+        current = current.selectedChild
+    end
+    return current
 end
 
 -- No early returns here, everything needs to know when the focus is lost/gained

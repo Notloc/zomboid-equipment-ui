@@ -52,6 +52,14 @@ if not EQUIPMENT_UI_SETTINGS then
             self.HIDE_EQUIPPED_ITEMS = hide
         end
         EQUIPMENT_UI_SETTINGS:applyHideEquippedItems(false)
+
+    -- TOGGLE UI CONTROLLER BIND
+        local DEFAULT_CONTROLLER_BIND = getActivatedMods():contains("WookieeGamepadSupport") and 9 or 7
+
+        EQUIPMENT_UI_SETTINGS.applyToggleUiControllerBind = function(self, bindIndex)
+            self.TOGGLE_UI_CONTROLLER_BIND = bindIndex - 1 
+        end
+        EQUIPMENT_UI_SETTINGS:applyToggleUiControllerBind(DEFAULT_CONTROLLER_BIND)
 end
 
 return EQUIPMENT_UI_SETTINGS

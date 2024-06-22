@@ -24,8 +24,7 @@ return {
     {
         name = "UI_equipment_back",
         position = { x = -14, y = 16 },
-        bodyLocations = {"Back"},
-        --scale = 1
+        bodyLocations = {"Back", "LowerBack"},
     },
     {
         name = "UI_equipment_waist",

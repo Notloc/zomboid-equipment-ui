@@ -1,4 +1,5 @@
 local c = require "EquipmentUI/Settings"
+require "InventoryAndLoot"
 
 local og_createChildren = ISInventoryPage.createChildren
 function ISInventoryPage:createChildren()

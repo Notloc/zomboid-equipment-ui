@@ -1,4 +1,5 @@
 require "ISUI/ISUIElement"
+local c = require "EquipmentUI/Settings"
 
 local BG_TEXTURE = getTexture("media/ui/equipmentui/ItemSlot.png")
 
@@ -44,5 +45,5 @@ function EquipmentDragItemRenderer:render()
 end
 
 function EquipmentDragItemRenderer:renderItem(item, x, y)
-    self:drawTextureCenteredAndSquare(item:getTex(), x, y, 32, 1, EquipmentSlot.getItemColor(item))
+    self:drawTextureCenteredAndSquare(item:getTex(), x, y, 32 * c.SCALE, 1, EquipmentSlot.getItemColor(item))
 end
