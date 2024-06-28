@@ -61,6 +61,7 @@ function EquipmentUIWindow:createChildren()
 
     self.scrollView = NotlocScrollView:new(0, titleBarHeight, self.width, self.height - titleBarHeight - 9);
     self.scrollView:initialise();
+    self.scrollView.scrollSensitivity = 24;
     self:addChild(self.scrollView);
 
     self.equipmentUi = EquipmentUI:new(0, 0, c.EQUIPMENT_WIDTH, 5000, self.inventoryPane, self.playerNum);
