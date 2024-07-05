@@ -72,25 +72,7 @@ function NotlocScrollView:prerender()
     self:setStencilRect(0, 0, self.width, self.height);
     self:updateScrollbars();
 
-    local xScroll = self:getXScroll()
-    local yScroll = self:getYScroll()
-
-    local scrollAreaWidth = self:getScrollAreaWidth()
-
-    if scrollAreaWidth - self.scrollwidth > xScroll then
-        xScroll = math.min(0, scrollAreaWidth - self.scrollwidth)
-        self:setXScroll(xScroll)
-    end
-
-    local deltaX = xScroll - self.lastX
-    local deltaY = yScroll - self.lastY
-    for _, child in pairs(self.scrollChildren) do
-        child:setX(child:getX() + deltaX)
-        child:setY(child:getY() + deltaY)
-    end
-
-    self.lastX = xScroll
-    self.lastY = yScroll
+    self:updateScroll();
 
 	ISUIElement.prerender(self)
 end
@@ -110,25 +92,47 @@ function NotlocScrollView:onMouseWheel(del)
     return true;
 end
 
-function NotlocScrollView:ensureChildIsVisible(uiElement, padding)
+function NotlocScrollView:updateScroll()
+    local xScroll = self:getXScroll()
+    local yScroll = self:getYScroll()
+
+    local scrollAreaWidth = self:getScrollAreaWidth()
+
+    if scrollAreaWidth - self.scrollwidth > xScroll then
+        xScroll = math.min(0, scrollAreaWidth - self.scrollwidth)
+        self:setXScroll(xScroll)
+    end
+
+    local deltaX = xScroll - self.lastX
+    local deltaY = yScroll - self.lastY
+    for _, child in pairs(self.scrollChildren) do
+        child:setX(child:getX() + deltaX)
+        child:setY(child:getY() + deltaY)
+    end
+
+    self.lastX = xScroll
+    self.lastY = yScroll
+end
+
+function NotlocScrollView:resetScroll()
+    self:setXScroll(0);
+    self:setYScroll(0);
+    self:updateScroll();
+end
+
+-- TODO: Rename this to scroll to screen position, change child to the screen Y position
+function NotlocScrollView:ensureChildIsVisible(child, padding)
     padding = padding or 50
 
-    local y = uiElement:getAbsoluteY()
-    y = y - self:getAbsoluteY()
-
-    local height = uiElement:getHeight()
-    local y2 = y + height
-
-    local sY = 0
-    local sY2 = self:getHeight()
+    local childYTop = child:getAbsoluteY()
+    childYTop = childYTop - self:getAbsoluteY()
 
     local scrollY = self:getYScroll()
 
-    if y2 + padding > sY2 then
-        local yD = y2 + padding - sY2
-        self:setYScroll(scrollY - yD)
-    elseif y - padding < sY then
-        local yD = y - padding - sY
-        self:setYScroll(scrollY - yD)
+    local delta = childYTop - padding
+    local newScroll = scrollY - delta
+    if newScroll > 0 then
+        newScroll = 0
     end
+    self:setYScroll(newScroll)
 end
