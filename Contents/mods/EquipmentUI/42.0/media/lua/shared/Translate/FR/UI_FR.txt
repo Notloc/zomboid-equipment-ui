@@ -18,4 +18,6 @@ UI_FR = {
 	UI_equipment_jewelry = "Bijoux",
 	UI_equipment_legs = "Jambes",
 	UI_equipment_feet = "Pieds",
+
+	UI_equipment_options_toggle_ui_controller_bind = "Ouvrir la fenêtre d'équipement (Manette)",
 }

@@ -1,6 +1,6 @@
 version=1
 id=2950902979
-title=[B42] Equipment UI - Paper Doll Equipment Interface
+title=[B42/41] Equipment UI - Paper Doll Equipment Interface
 description=[img]https://i.imgur.com/w5yeFNP.png[/img]
 description=
 description=[h1]Equipment UI[/h1]
