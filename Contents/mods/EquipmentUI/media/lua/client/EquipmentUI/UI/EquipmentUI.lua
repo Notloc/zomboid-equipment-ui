@@ -43,9 +43,10 @@ function EquipmentUI:createChildren()
     self:createEquipmentSlots();
     self:createWeaponSlots();
 
-    table.insert(c.OnScaleChanged, function() 
+    table.insert(c.OnScaleChanged, function()
+        local hotbar = getPlayerHotbar(self.playerNum)
         self:updateDynamicEquipmentSlots()
-        self:updateHotbarSlots()
+        self:updateHotbarSlots(hotbar)
         self:setWidth(c.EQUIPMENT_WIDTH)
         self:setHeight(self.bottomY)
     end)
@@ -53,11 +54,9 @@ function EquipmentUI:createChildren()
     Events.OnClothingUpdated.Add(function(character) 
         if character:isLocalPlayer() and character:getPlayerNum() == self.playerNum then
             self:updateSlots()
-            self.hotbarIsDirty = true -- We need to delay this because the hotbar event handler needs to run before we can refresh the hotbar slots
         end
     end)
     self:updateSlots()
-    self.hotbarIsDirty = true
 end
 
 function EquipmentUI:createEquipmentSlots()
@@ -184,14 +183,12 @@ function EquipmentUI:updateSlots()
     end
 end
 
-function EquipmentUI:updateHotbarSlots()
-    self:disableHotbarSlots()
-
-    local hotbar = getPlayerHotbar(self.playerNum)
-    if not hotbar or hotbar.needsRefresh then
+function EquipmentUI:updateHotbarSlots(hotbar)
+    if not hotbar then
         return
     end
 
+    self:disableHotbarSlots()
     local y = self.dynamicEquipmentY + c.HOTBAR_SLOT_Y_OFFSET
 
     local row = 0
@@ -213,7 +210,6 @@ function EquipmentUI:updateHotbarSlots()
     end
 
     self.bottomY = y + ((row + 1) * (c.SUPER_SLOT_SIZE + c.HOTBAR_SLOT_MARGIN)) + c.EQUIPMENT_UI_BOTTOM_PADDING
-    self.hotbarIsDirty = false
 end
 
 function EquipmentUI:createHotbarSlot(hotbar)
@@ -247,8 +243,12 @@ function EquipmentUI:prerender()
     self:renderHeaderCentered(getText("UI_equipment_hotbar"), self.dynamicEquipmentY + 12)
     self:drawTextureScaledUniform(self.bodyOutline, c.EQUIPMENT_UI_X_OFFSET, c.EQUIPMENT_UI_Y_OFFSET, c.SCALE, 1, 1, 1, 1);
 
-    if self.hotbarIsDirty then
-        self:updateHotbarSlots()
+    local hotbar = getPlayerHotbar(self.playerNum)
+    if hotbar and not hotbar.notloc_onRefresh then
+        hotbar:setRefreshEvent(function(hotbar)
+            self:updateHotbarSlots(hotbar)
+        end)
+        self:updateHotbarSlots(hotbar)
     end
 end
 
