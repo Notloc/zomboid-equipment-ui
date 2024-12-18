@@ -245,9 +245,9 @@ function EquipmentUI:prerender()
 
     local hotbar = getPlayerHotbar(self.playerNum)
     if hotbar and not hotbar.notloc_onRefresh then
-        hotbar:setRefreshEvent(function(hotbar)
+        hotbar.notloc_onRefresh = function(hotbar)
             self:updateHotbarSlots(hotbar)
-        end)
+        end
         self:updateHotbarSlots(hotbar)
     end
 end
