@@ -83,6 +83,10 @@ function NotlocScrollView:render()
 end
 
 function NotlocScrollView:onMouseWheel(del)
+    if isShiftKeyDown() then
+        return false;
+    end
+
     -- if the ctrl key is held down, scroll horizontally
     if isCtrlKeyDown() then
         self:setXScroll(self:getXScroll() - (del * self.scrollSensitivity));

@@ -1,21 +1,21 @@
 UI_UA = {
-    UI_optionscreen_binding_EquipmentUI = "Інтерфейс Екіпіровки"
-    UI_optionscreen_binding_equipment_toggle_window = "Відкрити Вікно Екіпіровки",
-    UI_equipment_options_scale = "Масштаб Інтерфейсу Екіпіровки",
-    UI_equipment_options_hide_equipped_items = "Приховати Екіпіровані Предмети",
+    UI_optionscreen_binding_EquipmentUI = "Р†РЅС‚РµСЂС„РµР№СЃ Р•РєС–РїС–СЂРѕРІРєРё"
+    UI_optionscreen_binding_equipment_toggle_window = "Р’С–РґРєСЂРёС‚Рё Р’С–РєРЅРѕ Р•РєС–РїС–СЂРѕРІРєРё",
+    UI_equipment_options_scale = "РњР°СЃС€С‚Р°Р± Р†РЅС‚РµСЂС„РµР№СЃСѓ Р•РєС–РїС–СЂРѕРІРєРё",
+    UI_equipment_options_hide_equipped_items = "РџСЂРёС…РѕРІР°С‚Рё Р•РєС–РїС–СЂРѕРІР°РЅС– РџСЂРµРґРјРµС‚Рё",
 
-    UI_equipment_equipment = "Екіпіровка",
-    UI_equipment_hotbar = "Панель Швидкого Доступу",
+    UI_equipment_equipment = "Р•РєС–РїС–СЂРѕРІРєР°",
+    UI_equipment_hotbar = "РџР°РЅРµР»СЊ РЁРІРёРґРєРѕРіРѕ Р”РѕСЃС‚СѓРїСѓ",
 
-    UI_equipment_head = "Голова",
-    UI_equipment_face = "Обличчя",
-    UI_equipment_torso = "Тулуб",
-    UI_equipment_vest = "Жилет",
-    UI_equipment_back = "Спина",
-    UI_equipment_waist = "Пояс",
-    UI_equipment_left_hand = "Ліва Рука",
-    UI_equipment_right_hand = "Права Рука",
-    UI_equipment_jewelry = "Прикраси",
-    UI_equipment_legs = "Ноги",
-    UI_equipment_feet = "Ступні",
+    UI_equipment_head = "Р“РѕР»РѕРІР°",
+    UI_equipment_face = "РћР±Р»РёС‡С‡СЏ",
+    UI_equipment_torso = "РўСѓР»СѓР±",
+    UI_equipment_vest = "Р–РёР»РµС‚",
+    UI_equipment_back = "РЎРїРёРЅР°",
+    UI_equipment_waist = "РџРѕСЏСЃ",
+    UI_equipment_left_hand = "Р›С–РІР° Р СѓРєР°",
+    UI_equipment_right_hand = "РџСЂР°РІР° Р СѓРєР°",
+    UI_equipment_jewelry = "РџСЂРёРєСЂР°СЃРё",
+    UI_equipment_legs = "РќРѕРіРё",
+    UI_equipment_feet = "РЎС‚СѓРїРЅС–",
 }
