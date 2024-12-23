@@ -1,10 +1,35 @@
+-- Might need to divide the screen into clothes and armor if we are gonna have this many slots
+local unpositioned = {
+    "Calf_Left",
+    "Calf_Left_Texture",
+    "Calf_Right",
+    "Calf_Right_Texture",
+    "Cuirass",
+    "Elbow_Left",
+    "Elbow_Right",
+    "ForeArm_Left",
+    "ForeArm_Right",
+    "Gorget",
+    "Knee_Left",
+    "Knee_Right",
+    "LeftArm",
+    "RightArm",
+    "ShoulderHolster",
+    "ShoulderpadLeft",
+    "ShoulderpadRight",
+    "SportShoulderpad",
+    "SportShoulderpadOnTop",
+    "Thigh_Left",
+    "Thigh_Right",
+}
+
 -- Order is important here, the first slot appears on top of the others in the ui
 -- It looks nicer to have the outermost layer of clothing on top
 return {
     {
         name = "UI_equipment_head",
         position = { x = 44, y = 4 },
-        bodyLocations = { "FullTop", "FullHat", "Hat", "FullHelmet", "Head", "Wig", "Scarf", "Neck"}
+        bodyLocations = { "SCBA", "SCBAnotank", "FullTop", "FullHat", "Hat", "FullHelmet", "Head", "Wig", "Scarf", "Neck"}
     },
     {
         name = "UI_equipment_face",
@@ -14,12 +39,12 @@ return {
     {
         name = "UI_equipment_torso",
         position = { x = 44, y = 58 },
-        bodyLocations = { "FullSuit", "FullSuitHead", "JacketSuit", "Jacket_Down", "JacketHat_Bulky", "Jacket_Bulky", "JacketHat", "Jacket", "BathRobe", "Boilersuit", "SweaterHat", "Sweater", "Dress", "Shirt", "ShortSleeveShirt", "Tshirt", "TankTop", "UnderwearTop", "Underwear"}
+        bodyLocations = { "FullSuit", "FullSuitHead", "JacketSuit", "Jacket_Down", "JacketHat_Bulky", "Jacket_Bulky", "JacketHat", "Jacket", "BathRobe", "Boilersuit", "Torso1Legs1", "SweaterHat", "Sweater", "Jersey", "LongDress", "Dress", "Shirt", "ShortSleeveShirt", "Tshirt", "TankTop", "UnderwearTop"}
     },
     {
         name = "UI_equipment_vest",
         position = { x = 106, y = 72 },
-        bodyLocations = { "SMUIJumpsuitPlus", "SMUITorsoRigPlus", "SMUIWebbingPlus", "TorsoRigPlus2", "TorsoRig", "TorsoRig2", "TorsoExtraVest", "TorsoExtraPlus1", "RifleSling", "AmmoStrap", "TorsoExtra"}
+        bodyLocations = { "SMUIJumpsuitPlus", "SMUITorsoRigPlus", "SMUIWebbingPlus", "Webbing", "TorsoRigPlus2", "TorsoRig", "TorsoRig2", "TorsoExtraVestBullet", "TorsoExtraVest", "VestTexture", "TorsoExtraPlus1", "RifleSling", "AmmoStrap", "TorsoExtra"}
     },
     {
         name = "UI_equipment_back",
@@ -34,12 +59,12 @@ return {
     {
         name = "UI_equipment_left_hand",
         position = { x = 100, y = 206 },
-        bodyLocations = { "Hands", "SMUIGlovesPlus", "LeftWrist", "Left_RingFinger", "Left_MiddleFinger" }
+        bodyLocations = { "HandsLeft", "Hands", "SMUIGlovesPlus", "LeftWrist", "Left_RingFinger", "Left_MiddleFinger" }
     },
     {
         name = "UI_equipment_right_hand",
         position = { x = -14, y = 206 },
-        bodyLocations = { "Hands", "SMUIGlovesPlus", "RightWrist", "Right_RingFinger", "Right_MiddleFinger" }
+        bodyLocations = { "HandsRight", "Hands", "SMUIGlovesPlus", "RightWrist", "Right_RingFinger", "Right_MiddleFinger" }
     },
     {
         name = "UI_equipment_jewelry",
@@ -49,11 +74,11 @@ return {
     {
         name = "UI_equipment_legs",
         position = { x = 44, y = 202 },
-        bodyLocations = { "Kneepads", "ShinPlateRight", "ShinPlateLeft", "ThighRight" ,"ThighLeft", "Pants", "Skirt", "Legs1", "LowerBody", "UnderwearExtra2", "UnderwearExtra1", "UnderwearBottom"}
+        bodyLocations = { "Kneepads", "ShinPlateRight", "ShinPlateLeft", "ThighRight" ,"ThighLeft", "PantsExtra", "Pants", "LongSkirt", "Skirt", "ShortPants", "ShortsShort", "Legs1", "LowerBody", "Codpiece", "UnderwearExtra2", "UnderwearExtra1", "UnderwearBottom", "Underwear"}
     },
     {
         name = "UI_equipment_feet",
         position = { x = 44, y = 272 },
-        bodyLocations = { "Shoes", "SMUIBootsPlus", "Socks"}
+        bodyLocations = { "AnkleHolster", "Shoes", "SMUIBootsPlus", "Socks"}
     }
 }
