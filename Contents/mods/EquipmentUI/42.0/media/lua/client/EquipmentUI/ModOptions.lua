@@ -1,72 +1,55 @@
 require "EquipmentUI/Settings"
 
 if not EQUIPMENT_UI_MOD_OPTIONS then
-    local DEFAULT_CONTROLLER_BIND = getActivatedMods():contains("WookieeGamepadSupport") and 9 or 7
+    local vanillaOptions = PZAPI.ModOptions:create("EQUIPMENT_UI", getText("UI_optionscreen_binding_EquipmentUI"))
 
-    EQUIPMENT_UI_MOD_OPTIONS = {
-        options = {
-            EQUIPMENT_UI_SCALE_INDEX = 2,
-            HIDE_EQUIPPED_ITEMS = false,
-            TOGGLE_UI_CONTROLLER_BIND_INDEX = DEFAULT_CONTROLLER_BIND, -- Default to SELECT, or LS if WookieeGamepadSupport is active
-        },
-        names = {
-            EQUIPMENT_UI_SCALE_INDEX = "UI_equipment_options_scale",
-            HIDE_EQUIPPED_ITEMS = "UI_equipment_options_hide_equipped_items",
-            TOGGLE_UI_CONTROLLER_BIND_INDEX = "UI_equipment_options_toggle_ui_controller_bind",
-        },
-        mod_id = "EQUIPMENT_UI",
-        mod_shortname = getText("UI_optionscreen_binding_EquipmentUI"),
-    }
-end
+    local key = "EQUIPMENT_UI_SCALE_INDEX"
+    local uiName = getText("UI_equipment_options_scale")
 
-if ModOptions and ModOptions.getInstance then
-    local settings = ModOptions:getInstance(EQUIPMENT_UI_MOD_OPTIONS)
-    ModOptions:loadFile() -- Load the mod options file right away
+    local hideEquippedItemsTickBox = vanillaOptions:addTickBox("HIDE_EQUIPPED_ITEMS", getText("UI_equipment_options_hide_equipped_items"), "tooltip", false)
 
-    local uiScale = settings:getData("EQUIPMENT_UI_SCALE_INDEX")
-    uiScale[1] = getText("0.5x")
-    uiScale[2] = getText("1x")
-    uiScale[3] = getText("1.5x")
-    uiScale[4] = getText("2x")
-    uiScale[5] = getText("2.5x")
-    uiScale[6] = getText("3x")
-    uiScale[7] = getText("3.5x")
-    uiScale[8] = getText("4x")
+    local uiScaleDropdown = vanillaOptions:addComboBox(key, uiName, "tooltip")
+    uiScaleDropdown:addItem("0.5x", false)
+    uiScaleDropdown:addItem("1x", true)
+    uiScaleDropdown:addItem("1.5x", false)
+    uiScaleDropdown:addItem("2x", false)
+    uiScaleDropdown:addItem("2.5x", false)
+    uiScaleDropdown:addItem("3x", false)
+    uiScaleDropdown:addItem("3.5x", false)
+    uiScaleDropdown:addItem("4x", false)
 
-    function uiScale:OnApplyInGame(val)
-        EQUIPMENT_UI_MOD_OPTIONS.options.EQUIPMENT_UI_SCALE_INDEX = val
-        EQUIPMENT_UI_SETTINGS:applyScale(val * 0.5)
-    end
-
-    EQUIPMENT_UI_SETTINGS:applyScale(EQUIPMENT_UI_MOD_OPTIONS.options.EQUIPMENT_UI_SCALE_INDEX * 0.5)
-
-
-    local toggleUiControllerBind = settings:getData("TOGGLE_UI_CONTROLLER_BIND_INDEX")
-    toggleUiControllerBind[1] =  getText(" A  /  X ")
-    toggleUiControllerBind[2] =  getText(" B  /  O ")
-    toggleUiControllerBind[3] =  getText(" X  /  [ ] ")
-    toggleUiControllerBind[4] =  getText(" Y  /  /\\ ")
-    toggleUiControllerBind[5] =  getText(" LB /  L1 ")
-    toggleUiControllerBind[6] =  getText(" RB /  R1 ")
-    toggleUiControllerBind[7] =  getText("  < /  - ")
-    toggleUiControllerBind[8] =  getText("  > /  + ")
-    toggleUiControllerBind[9] =  getText(" LS /  L3 ")
-    toggleUiControllerBind[10] = getText(" RS /  R3 ")
-
+    local wookiePresent = getActivatedMods():contains("WookieeGamepadSupport") or getActivatedMods():contains("\\WookieeGamepadSupport")
+    local toggleUiControllerBindDropdown = vanillaOptions:addComboBox("TOGGLE_UI_CONTROLLER_BIND_INDEX", getText("UI_equipment_options_toggle_ui_controller_bind"), "tooltip")
+    toggleUiControllerBindDropdown:addItem(" A  /  X ", false)
+    toggleUiControllerBindDropdown:addItem(" B  /  O ", false)
+    toggleUiControllerBindDropdown:addItem(" X  /  [ ] ", false)
+    toggleUiControllerBindDropdown:addItem(" Y  /  /\\ ", false)
+    toggleUiControllerBindDropdown:addItem(" LB /  L1 ", false)
+    toggleUiControllerBindDropdown:addItem(" RB /  R1 ", false)
+    toggleUiControllerBindDropdown:addItem("  < /  - ", not wookiePresent)
+    toggleUiControllerBindDropdown:addItem("  > /  + ", false)
+    toggleUiControllerBindDropdown:addItem(" LS /  L3 ", wookiePresent)
+    toggleUiControllerBindDropdown:addItem(" RS /  R3 ", false)
     -- Use left and right triangles as iconography for the start and select buttons
 
-    function toggleUiControllerBind:OnApplyInGame(val)
-        EQUIPMENT_UI_MOD_OPTIONS.options.TOGGLE_UI_CONTROLLER_BIND_INDEX = val
-        EQUIPMENT_UI_SETTINGS:applyToggleUiControllerBind(val)
+    function vanillaOptions:apply()
+        local scale = self:getOption("EQUIPMENT_UI_SCALE_INDEX"):getValue() * 0.5 -- Multiply by 0.5 to get the actual scale, only works due to the dropdown's values being 0.5x, 1x, 1.5x, etc.
+        EQUIPMENT_UI_SETTINGS:applyScale(scale)
+
+        local hideEquippedItems = self:getOption("HIDE_EQUIPPED_ITEMS"):getValue()
+        EQUIPMENT_UI_SETTINGS:applyHideEquippedItems(hideEquippedItems)
+
+        local toggleUiControllerBindIndex = self:getOption("TOGGLE_UI_CONTROLLER_BIND_INDEX"):getValue()
+        EQUIPMENT_UI_SETTINGS:applyToggleUiControllerBind(toggleUiControllerBindIndex)
     end
 
-
-    local hideEquippedItems = settings:getData("HIDE_EQUIPPED_ITEMS")
-
-    function hideEquippedItems:OnApplyInGame(val)
-        EQUIPMENT_UI_MOD_OPTIONS.options.HIDE_EQUIPPED_ITEMS = val
-        EQUIPMENT_UI_SETTINGS:applyHideEquippedItems(val)
+    local og_load = PZAPI.ModOptions.load
+    PZAPI.ModOptions.load = function(self)
+        og_load(self)
+        pcall(function ()
+            vanillaOptions:apply()
+        end)
     end
 
-    EQUIPMENT_UI_SETTINGS:applyHideEquippedItems(EQUIPMENT_UI_MOD_OPTIONS.options.HIDE_EQUIPPED_ITEMS)
+    EQUIPMENT_UI_MOD_OPTIONS = vanillaOptions
 end
