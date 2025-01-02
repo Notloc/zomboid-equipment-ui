@@ -139,4 +139,5 @@ function NotlocScrollView:ensureChildIsVisible(child, padding)
         newScroll = 0
     end
     self:setYScroll(newScroll)
+    self:updateScroll()
 end

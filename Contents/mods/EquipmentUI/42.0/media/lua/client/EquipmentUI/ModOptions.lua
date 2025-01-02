@@ -6,7 +6,7 @@ if not EQUIPMENT_UI_MOD_OPTIONS then
     local key = "EQUIPMENT_UI_SCALE_INDEX"
     local uiName = getText("UI_equipment_options_scale")
 
-    local hideEquippedItemsTickBox = vanillaOptions:addTickBox("HIDE_EQUIPPED_ITEMS", getText("UI_equipment_options_hide_equipped_items"), "tooltip", false)
+    local hideEquippedItemsTickBox = vanillaOptions:addTickBox("HIDE_EQUIPPED_ITEMS", getText("UI_equipment_options_hide_equipped_items"), false, "tooltip")
 
     local uiScaleDropdown = vanillaOptions:addComboBox(key, uiName, "tooltip")
     uiScaleDropdown:addItem("0.5x", false)
