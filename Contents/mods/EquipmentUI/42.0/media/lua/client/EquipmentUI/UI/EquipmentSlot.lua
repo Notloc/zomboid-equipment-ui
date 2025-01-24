@@ -142,11 +142,43 @@ end
 
 EquipmentSlot.openItemContextMenu = function(uiContext, x, y, item, invPane, playerNum)
     local container = item:getContainer()
-    local isInInv = container and container:isInCharacterInventory(getSpecificPlayer(playerNum))
+
+    local player = getSpecificPlayer(playerNum)
+    local isInInv = container and container:isInCharacterInventory(player)
     local menu = ISInventoryPaneContextMenu.createMenu(playerNum, isInInv, NotUtil.createVanillaStacksFromItems({item}, invPane), uiContext:getAbsoluteX()+x, uiContext:getAbsoluteY()+y)
+
+    local unequipAllOption = menu:addOption("Unequip All", player, EquipmentSlot.unequipAll);
+
+    local unequipIdx = nil
+    local unequipAllIdx = nil
+    for i, option in ipairs(menu.options) do
+        if option.onSelect == ISInventoryPaneContextMenu.onUnEquip then
+            unequipIdx = i
+        end
+        if option == unequipAllOption then
+            unequipAllIdx = i
+        end
+    end
+
+    if unequipIdx then
+        table.remove(menu.options, unequipAllIdx)
+        table.insert(menu.options, unequipIdx+1, unequipAllOption)
+    end
 
     if menu and menu.numOptions > 1 and JoypadState.players[playerNum+1] then
         uiContext.controllerNode:focusContextMenu(playerNum, menu)
+    end
+end
+
+---@param player IsoPlayer
+EquipmentSlot.unequipAll = function(player)
+    local wornItems = player:getWornItems()
+    for i=0, wornItems:size()-1 do
+        local wornItem = wornItems:get(i)
+        local item = wornItem:getItem()
+        if item and not item:isHidden() then
+            ISInventoryPaneContextMenu.unequipItem(item, player:getPlayerNum())
+        end
     end
 end
 

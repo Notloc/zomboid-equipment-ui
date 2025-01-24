@@ -7,7 +7,8 @@ UI_EN = {
 
 	UI_equipment_equipment = "Equipment",
 	UI_equipment_hotbar = "Hotbar",
-	
+	UI_equipment_unequip_all = "Unequip All",
+
 	UI_equipment_head = "Head",
 	UI_equipment_face = "Face",
 	UI_equipment_torso = "Torso",
