@@ -12,7 +12,7 @@ EquipmentUI = ISPanelJoypad:derive("EquipmentUI");
 EquipmentUI.version = {
     major = 2,
     minor = 1,
-    revision = 2,
+    revision = 5,
 }
 
 function EquipmentUI:new(x, y, width, height, inventoryPane, playerNum)
