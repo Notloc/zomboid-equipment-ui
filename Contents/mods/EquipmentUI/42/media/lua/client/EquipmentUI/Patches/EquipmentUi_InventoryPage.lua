@@ -1,7 +1,8 @@
-local c = require "EquipmentUI/Settings"
-require "InventoryAndLoot"
+local c = require ("EquipmentUI/Settings")
+require ("InventoryAndLoot") -- I do not remember what this is
 
 local og_createChildren = ISInventoryPage.createChildren
+---@diagnostic disable-next-line: duplicate-set-field
 function ISInventoryPage:createChildren()
     og_createChildren(self)
 
@@ -19,7 +20,7 @@ function ISInventoryPage:createChildren()
         toggleButton:addToUIManager()
 
         local dragRenderer = nil
-        if not InventoryTetris then
+        if not c.InventoryTetris then
             dragRenderer = EquipmentDragItemRenderer:new(self.equipmentUi, self.inventoryPane, self.player)
             dragRenderer:initialise()
             dragRenderer:addToUIManager()
@@ -44,6 +45,7 @@ function ISInventoryPage:createChildren()
 end
 
 local og_render = ISInventoryPage.prerender
+---@diagnostic disable-next-line: duplicate-set-field
 function ISInventoryPage:prerender()
     og_render(self)
 
@@ -70,6 +72,7 @@ function ISInventoryPage:isMouseOverEquipmentUi()
 end
 
 local og_onMouseDownOutside = ISInventoryPage.onMouseDownOutside
+---@diagnostic disable-next-line: duplicate-set-field
 function ISInventoryPage:onMouseDownOutside(x, y)
     local wasPin = self.pin
     if self.equipmentUi and self.equipmentUi.isDocked and self:isMouseOverEquipmentUi() then
@@ -81,6 +84,7 @@ function ISInventoryPage:onMouseDownOutside(x, y)
 end
 
 local og_onRightMouseDownOutside = ISInventoryPage.onRightMouseDownOutside
+---@diagnostic disable-next-line: duplicate-set-field
 function ISInventoryPage:onRightMouseDownOutside(x, y)
     local wasPin = self.pin
     if self.equipmentUi and self.equipmentUi.isDocked and self:isMouseOverEquipmentUi() then
@@ -92,6 +96,7 @@ function ISInventoryPage:onRightMouseDownOutside(x, y)
 end
 
 local og_onMouseMoveOutside = ISInventoryPage.onMouseMoveOutside
+---@diagnostic disable-next-line: duplicate-set-field
 function ISInventoryPage:onMouseMoveOutside(dx, dy)
     if DragAndDrop.isDragging() and self.isCollapsed then
         self.isCollapsed = false;

@@ -14,12 +14,13 @@ end)
 
 -- Toggle the UI when pressing the select button on the controller
 local og_ISInventoryPage_onJoypadDown = ISInventoryPage.onJoypadDown
+---@diagnostic disable-next-line: duplicate-set-field
 function ISInventoryPage:onJoypadDown(button)
     og_ISInventoryPage_onJoypadDown(self, button)
 
     local inventoryPage = getPlayerInventory(self.player)
     if button == OPT.TOGGLE_UI_CONTROLLER_BIND then
-        if InventoryTetris then
+        if OPT.InventoryTetris then
             if inventoryPage.equipmentUi.isClosed then
                 self:toggleEquipmentUIForController()
             end 
@@ -98,6 +99,7 @@ end
 
 --  Handle switching focus between the inventories and equipment UIs
 local og_ISInventoryPage_onJoypadDirLeft = ISInventoryPage.onJoypadDirLeft
+---@diagnostic disable-next-line: duplicate-set-field
 function ISInventoryPage:onJoypadDirLeft(joypadData)
     og_ISInventoryPage_onJoypadDirLeft(self, joypadData)
     if self == getPlayerInventory(self.player) then
@@ -108,6 +110,7 @@ function ISInventoryPage:onJoypadDirLeft(joypadData)
 end
 
 local og_ISInventoryPage_onJoypadDirRight = ISInventoryPage.onJoypadDirRight
+---@diagnostic disable-next-line: duplicate-set-field
 function ISInventoryPage:onJoypadDirRight(joypadData)
     og_ISInventoryPage_onJoypadDirRight(self, joypadData)
     if self == getPlayerLoot(self.player) then

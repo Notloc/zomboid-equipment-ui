@@ -1,4 +1,4 @@
-require "ISUI/ISPanelJoypad"
+require ("ISUI/ISPanelJoypad")
 local c = require "EquipmentUI/Settings"
 
 local SUPER_SLOT_DEFS = require "EquipmentUI/EquipmentSlotDefinitions"
@@ -51,12 +51,18 @@ function EquipmentUI:createChildren()
         self:setHeight(self.bottomY)
     end)
 
-    Events.OnClothingUpdated.Add(function(character) 
-        if character:isLocalPlayer() and character:getPlayerNum() == self.playerNum then
-            self:updateSlots()
+    Events.OnClothingUpdated.Add(function(character)
+        if instanceof(character, "IsoPlayer") then
+            ---@cast character IsoPlayer
+            if character:isLocalPlayer() and character:getPlayerNum() == self.playerNum then
+                self:updateSlots()
+                self:updateDynamicEquipmentSlots()
+            end
         end
     end)
+
     self:updateSlots()
+    self:updateDynamicEquipmentSlots()
 end
 
 function EquipmentUI:createEquipmentSlots()
@@ -80,13 +86,6 @@ function EquipmentUI:createEquipmentSlots()
             self.superSlots[bodyLocation] = superslot;
         end
     end
-
-    self:updateDynamicEquipmentSlots()
-    Events.OnClothingUpdated.Add(function(character) 
-        if character:isLocalPlayer() and character:getPlayerNum() == self.playerNum then
-            self:updateDynamicEquipmentSlots()
-        end
-    end)
 end
 
 function EquipmentUI:updateDynamicEquipmentSlots()
@@ -95,7 +94,7 @@ function EquipmentUI:updateDynamicEquipmentSlots()
         table.insert(self.dynamicSlotPool, slot)
         self.dynamicSlots[key] = nil
     end
- 
+
     local player = getSpecificPlayer(self.playerNum)
     local wornItems = player:getWornItems()
 
@@ -129,7 +128,6 @@ function EquipmentUI:updateDynamicEquipmentSlots()
     end
 
     self.dynamicEquipmentY = c.EQUIPMENT_DYNAMIC_SLOT_Y_OFFSET + ((row) * (c.SLOT_SIZE + 4)) + 8
-
 end
 
 function EquipmentUI:createDynamicEquipmentSlot(bodyLocation)

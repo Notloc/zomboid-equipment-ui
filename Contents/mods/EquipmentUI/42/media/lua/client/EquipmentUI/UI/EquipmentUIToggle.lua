@@ -1,4 +1,4 @@
-require "ISUI/ISUIElement"
+require ("ISUI/ISUIElement")
 
 local BUTTON_TEX = getTexture("media/ui/equipmentui/equipment_min.png");
 

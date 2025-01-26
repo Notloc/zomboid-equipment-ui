@@ -1,4 +1,4 @@
-require "IS/UI/ISPanel"
+require ("ISUI/ISPanel")
 local c = require "EquipmentUI/Settings"
 local BG_COLOR = {r=0, g=0, b=0, a=0.95}
 
@@ -110,7 +110,7 @@ end
 function EquipmentSlot:dropOrUnequip()
     local item = self.item
     if item then
-        if not InventoryTetris then
+        if not c.InventoryTetris then
             if self.inventoryPane:isMouseOver() then
                 ISInventoryPaneContextMenu.unequipItem(item, self.playerNum)
                 return

@@ -1,5 +1,6 @@
-require "IS/UI/ISPanel"
-local c = require "EquipmentUI/Settings"
+require ("ISUI/ISPanel")
+local c = require ("EquipmentUI/Settings")
+
 local BG_TEXTURE = getTexture("media/ui/equipmentui/ItemSlot.png")
 local BG_COLOR = {r=0.4, g=0.4, b=0.4}
 
@@ -193,7 +194,7 @@ end
 function HotbarSlot:dropOrUnequip()
     local item = self:getItem()
     if item then
-        if not InventoryTetris then
+        if not c.InventoryTetris then
             if self.inventoryPane:isMouseOver() then
                 self.hotbar:removeItem(item, true)
                 return

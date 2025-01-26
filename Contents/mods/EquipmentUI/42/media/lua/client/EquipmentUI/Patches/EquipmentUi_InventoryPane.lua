@@ -1,6 +1,7 @@
-local c = require "EquipmentUI/Settings"
+local c = require ("EquipmentUI/Settings")
 
 local og_updateTooltip = ISInventoryPane.updateTooltip
+---@diagnostic disable-next-line: duplicate-set-field
 function ISInventoryPane:updateTooltip()
 	local equipmentUi = self.parent.equipmentUi
 	if self.parent:isMouseOverEquipmentUi() or (equipmentUi and equipmentUi.controllerNode.isFocused) then
@@ -68,9 +69,9 @@ function ISInventoryPane:doTooltipForItem(item)
 	local inventoryTooltip = inventoryPage and inventoryPage.inventoryPane.toolRender
 	local lootPage = getPlayerLoot(self.player)
 	local lootTooltip = lootPage and lootPage.inventoryPane.toolRender
-	UIManager.setPlayerInventoryTooltip(self.player,
-		inventoryTooltip and inventoryTooltip.javaObject or nil,
-		lootTooltip and lootTooltip.javaObject or nil)
+
+	---@diagnostic disable-next-line: param-type-mismatch
+	UIManager.setPlayerInventoryTooltip(self.player, inventoryTooltip and inventoryTooltip.javaObject or nil, lootTooltip and lootTooltip.javaObject or nil)
 end
 
 -- Delay overriding the functions until the game starts, so we can make sure our changes are not overwritten by other mods
@@ -80,6 +81,7 @@ Events.OnGameStart.Add(function()
 	if events_hooked then return end
 
 	local og_renderdetails = ISInventoryPane.renderdetails
+	---@diagnostic disable-next-line: duplicate-set-field
 	function ISInventoryPane:renderdetails(doDragged)
 		if not self.parent.onCharacter then
 			og_renderdetails(self, doDragged)
@@ -89,7 +91,7 @@ Events.OnGameStart.Add(function()
 		if self.doHideEquipped ~= c.HIDE_EQUIPPED_ITEMS then -- So the list is updated when the setting is changed
 			self:refreshContainer()
 		end
-		
+
 		if not c.HIDE_EQUIPPED_ITEMS then 
 			self.doHideEquipped = false
 			og_renderdetails(self, doDragged)
@@ -102,15 +104,16 @@ Events.OnGameStart.Add(function()
 	end
 
 	local og_refreshContainer = ISInventoryPane.refreshContainer
+	---@diagnostic disable-next-line: duplicate-set-field
 	function ISInventoryPane:refreshContainer()
 		og_refreshContainer(self)
 		if not self.parent.onCharacter then return end
-		if InventoryTetris then return end
+		if c.InventoryTetris then return end
 
 		self.cachedItemList = self.itemslist
 
 		if not c.HIDE_EQUIPPED_ITEMS or not self.parent.onCharacter then return end
-		
+
 		local newlist = {}
 		for k, v in ipairs(self.itemslist) do
 			if v and not (v.equipped or v.inHotbar) then
@@ -122,4 +125,3 @@ Events.OnGameStart.Add(function()
 
 	events_hooked = true
 end)
-

@@ -1,4 +1,4 @@
-require "ISUI/ISUIElement"
+require ("ISUI/ISUIElement")
 local c = require "EquipmentUI/Settings"
 
 local BG_TEXTURE = getTexture("media/ui/equipmentui/ItemSlot.png")

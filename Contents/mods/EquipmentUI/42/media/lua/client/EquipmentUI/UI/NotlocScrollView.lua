@@ -1,4 +1,4 @@
-require "ISUI/ISUIElement"
+require ("ISUI/ISUIElement")
 
 NotlocScrollView = ISUIElement:derive("NotlocScrollView");
 

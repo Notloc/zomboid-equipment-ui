@@ -1,5 +1,6 @@
-require "IS/UI/ISPanel"
-local c = require "EquipmentUI/Settings"
+require ("ISUI/ISPanel")
+local c = require ("EquipmentUI/Settings")
+
 local BG_COLOR = {r=1, g=1, b=1}
 local TWO_HAND_OFFSET = 1.3;
 
@@ -31,7 +32,7 @@ function WeaponSlot:initialise()
     ISPanel.initialise(self);
 
     table.insert(c.OnScaleChanged, function(scale)
-       self:applyScale(scale) 
+       self:applyScale(scale)
     end)
     self:applyScale(c.SCALE)
     NotlocControllerNode
@@ -232,7 +233,7 @@ end
 function WeaponSlot:dropOrUnequip()
     local item = self:getHandItem();
     if item then
-        if not InventoryTetris then
+        if not c.InventoryTetris then
             if self.inventoryPane:isMouseOver() then
                 ISInventoryPaneContextMenu.unequipItem(item, self.playerNum)
                 return

@@ -29,7 +29,7 @@ return {
     {
         name = "UI_equipment_head",
         position = { x = 44, y = 4 },
-        bodyLocations = { "SCBA", "SCBAnotank", "FullTop", "FullHat", "Hat", "FullHelmet", "Head", "Wig", "Scarf", "Neck"}
+        bodyLocations = { "SCBA", "SCBAnotank", "FullTop", "FullHat", "Hat", "FullHelmet", "Head", "powerhorns", "Wig", "Scarf", "Neck"}
     },
     {
         name = "UI_equipment_face",

@@ -1,8 +1,6 @@
-require "ISUI/ISPanel"
+require ("ISUI/ISPanel")
 local c = require "EquipmentUI/Settings"
 
-local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
-local FONT_HGT_MEDIUM = getTextManager():getFontHeight(UIFont.Medium)
 local POPOUT_TEX = getTexture("media/ui/equipmentui/popout.png")
 local ATTACH_TEX = getTexture("media/ui/equipmentui/attach.png")
 local CLOSE_TEX = getTexture("media/ui/equipmentui/close.png")
@@ -414,7 +412,7 @@ function EquipmentUIWindow:onJoypadDown(button)
         setJoypadFocus(self.playerNum, inv);
     end
 
-    if InventoryTetris then
+    if c.InventoryTetris then
         if button == Joypad.LBumper then
             setJoypadFocus(self.playerNum, getPlayerInventory(self.playerNum));
         end

@@ -1,11 +1,11 @@
-require "IS/UI/ISPanel"
+require ("ISUI/ISPanel")
 local c = require "EquipmentUI/Settings"
-local BG_TEXTURE = getTexture("media/ui/equipmentui/ItemSlot.png")
 
 local MAX_COLUMN = 3
 local MINI_ICON_SCALE = 0.375
 local MINI_ICON_SIZE = 32 * MINI_ICON_SCALE
 local BG_COLOR = { r = 0.4, g = 0.4, b = 0.4 }
+local BG_TEXTURE = getTexture("media/ui/equipmentui/ItemSlot.png")
 
 EquipmentSuperSlot = ISPanel:derive("EquipmentSuperSlot");
 
@@ -450,7 +450,7 @@ end
 function EquipmentSuperSlot:dropOrUnequip()
     local item = self:getTopItem()
     if item then
-        if not InventoryTetris then
+        if not c.InventoryTetris then
             if self.inventoryPane:isMouseOver() then
                 ISInventoryPaneContextMenu.unequipItem(item, self.playerNum)
                 return
