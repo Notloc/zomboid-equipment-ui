@@ -449,24 +449,7 @@ end
 
 function EquipmentSuperSlot:dropOrUnequip()
     local item = self:getTopItem()
-    if item then
-        if not c.InventoryTetris then
-            if self.inventoryPane:isMouseOver() then
-                ISInventoryPaneContextMenu.unequipItem(item, self.playerNum)
-                return
-            end
-        end
-
-        local playerObj = getSpecificPlayer(self.playerNum)
-        local vehicle = playerObj:getVehicle()
-        if vehicle then
-            return
-        end
-
-        if not ISUIElement.isMouseOverAnyUI() then
-            ISInventoryPaneContextMenu.dropItem(item, self.playerNum)
-        end
-    end
+    EquipmentSlot.doDropOrUnequip(self, item)
 end
 
 function EquipmentSuperSlot:unequip()

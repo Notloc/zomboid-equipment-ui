@@ -109,11 +109,20 @@ end
 
 function EquipmentSlot:dropOrUnequip()
     local item = self.item
+    self:doDropOrUnequip(item)
+end
+
+function EquipmentSlot:doDropOrUnequip(item)
     if item then
         if not c.InventoryTetris then
             if self.inventoryPane:isMouseOver() then
                 ISInventoryPaneContextMenu.unequipItem(item, self.playerNum)
                 return
+            end
+            local loot = getPlayerLoot(self.playerNum)
+            if loot.inventoryPane:isMouseOver() then
+                local inv = loot.inventoryPane.inventory
+                loot.inventoryPane:transferItemsByWeight({item}, inv)
             end
         end
 
@@ -128,7 +137,6 @@ function EquipmentSlot:dropOrUnequip()
         end
     end
 end
-
 
 
 -- STATIC METHODS
