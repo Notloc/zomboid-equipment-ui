@@ -12,7 +12,7 @@ if not EQUIPMENT_UI_SETTINGS then
 
     local tetrisPresent = isModPresent("INVENTORY_TETRIS")
     if tetrisPresent then
-        EQUIPMENT_UI_SETTINGS.InventoryTetris = require("InventoryTetris/InventoryTetris")
+        EQUIPMENT_UI_SETTINGS.InventoryTetris = require("InventoryTetris/InventoryTetris") or tetrisPresent
     end
 
     -- Doubles as code to initialize the settings at default values

@@ -1,8 +1,6 @@
 require ("ISUI/ISUIElement")
 local c = require "EquipmentUI/Settings"
 
-local BG_TEXTURE = getTexture("media/ui/equipmentui/ItemSlot.png")
-
 EquipmentDragItemRenderer = ISUIElement:derive("DragItemRenderer")
 
 function EquipmentDragItemRenderer:new(equipmentUi, inventoryPane, playerNum)
@@ -30,7 +28,7 @@ function EquipmentDragItemRenderer:render()
     if not item then
         return
     end
-    
+
     local lootPage = getPlayerLoot(self.playerNum)
     if self.inventoryPane.dragging or lootPage.inventoryPane.dragging then
         return
