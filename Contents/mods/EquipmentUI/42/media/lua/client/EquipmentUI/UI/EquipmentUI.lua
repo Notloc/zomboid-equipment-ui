@@ -10,9 +10,9 @@ local FONT_HGT_MEDIUM = getTextManager():getFontHeight(UIFont.Medium)
 EquipmentUI = ISPanelJoypad:derive("EquipmentUI");
 
 EquipmentUI.version = {
-    major = 2,
-    minor = 1,
-    revision = 5,
+    major = 3,
+    minor = 0,
+    revision = 0,
 }
 
 function EquipmentUI:new(x, y, width, height, inventoryPane, playerNum)
