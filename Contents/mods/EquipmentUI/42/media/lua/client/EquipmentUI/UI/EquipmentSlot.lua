@@ -141,6 +141,30 @@ end
 
 -- STATIC METHODS
 
+
+-- Assumes all items are the same type
+local function createVanillaStacksFromItems(items, inventoryPane)
+    local vanillaStack = {}
+    vanillaStack.items = {}
+    vanillaStack.invPanel = inventoryPane
+
+    if items[1] then
+        vanillaStack.name = items[1]:getName()
+        vanillaStack.cat = items[1]:getDisplayCategory() or items[1]:getCategory();
+    end
+
+    local weight = 0
+    table.insert(vanillaStack.items, items[1])
+    for _, item in ipairs(items) do
+        table.insert(vanillaStack.items, item)
+        weight = weight + item:getUnequippedWeight()
+    end
+    vanillaStack.weight = weight
+    vanillaStack.count = #items + 1
+
+    return {vanillaStack}
+end
+
 EquipmentSlot.getBodyLocationForItem = function(item)
     if not item:IsClothing() and not item:IsInventoryContainer() then return nil end
     local location = item:IsClothing() and item:getBodyLocation() or item:canBeEquipped()
@@ -153,7 +177,7 @@ EquipmentSlot.openItemContextMenu = function(uiContext, x, y, item, invPane, pla
 
     local player = getSpecificPlayer(playerNum)
     local isInInv = container and container:isInCharacterInventory(player)
-    local menu = ISInventoryPaneContextMenu.createMenu(playerNum, isInInv, NotUtil.createVanillaStacksFromItems({item}, invPane), uiContext:getAbsoluteX()+x, uiContext:getAbsoluteY()+y)
+    local menu = ISInventoryPaneContextMenu.createMenu(playerNum, isInInv, createVanillaStacksFromItems({item}, invPane), uiContext:getAbsoluteX()+x, uiContext:getAbsoluteY()+y)
 
     local unequipAllOption = menu:addOption("Unequip All", player, EquipmentSlot.unequipAll);
 

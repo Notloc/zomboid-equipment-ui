@@ -7,17 +7,12 @@ function ISInventoryPage:createChildren()
     og_createChildren(self)
 
     if self.onCharacter then
-        self.equipmentUi = EquipmentUIWindow:new(0, 0, self.inventoryPane, self.player);
-        self.equipmentUi:initialise()
-        self.equipmentUi:addToUIManager()
+        self.equipmentUi = EquipmentUIWindow:new(getText("UI_equipment_equipment"), "EquipmentUILayout", c.EQUIPMENT_WIDTH, self.inventoryPane, self.player, c);
+        self.equipmentUi:addToInventoryPage(self)
 
         local playerObj = getSpecificPlayer(self.player)
         local isController = playerObj:getJoypadBind() ~= -1
         self.equipmentUi.isClosed = isController
-
-        local toggleButton = EquipmentUIToggle:new(self.equipmentUi, self.inventoryPane)
-        toggleButton:initialise()
-        toggleButton:addToUIManager()
 
         local dragRenderer = nil
         if not c.InventoryTetris then
@@ -28,7 +23,7 @@ function ISInventoryPage:createChildren()
 
         self.destroyEquipmentUi = function()
             self.equipmentUi:removeFromUIManager()
-            toggleButton:removeFromUIManager()
+            self.equipmentUi.toggleElement:removeFromUIManager()
             if dragRenderer then
                 dragRenderer:removeFromUIManager()
             end
