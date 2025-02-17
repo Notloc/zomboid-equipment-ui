@@ -13,7 +13,7 @@ function EquipmentUIWindow:createChildren()
     self.scrollView.scrollSensitivity = 24;
     self:addChild(self.scrollView);
 
-    self.equipmentUi = EquipmentUI:new(0, 0, c.EQUIPMENT_WIDTH, 5000, self.inventoryPane, self.playerNum);
+    self.equipmentUi = EquipmentUI:new(0, 0, self.width, 5000, self.inventoryPane, self.playerNum);
     self.equipmentUi:initialise()
     self.scrollView:addScrollChild(self.equipmentUi);
 

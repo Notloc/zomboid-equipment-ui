@@ -1,8 +1,10 @@
 local SidePanelToggle = require("Notloc/UI/SidePanels/SidePanelToggle")
 
-local POPOUT_TEX = getTexture("media/ui/notloc/sidepanel/popout.png")
-local ATTACH_TEX = getTexture("media/ui/notloc/sidepanel/attach.png")
-local CLOSE_TEX = getTexture("media/ui/notloc/sidepanel/close.png")
+local POPOUT_TEX = getTexture("media/ui/Notloc/SidePanel/popout.png")
+local ATTACH_TEX = getTexture("media/ui/Notloc/SidePanel/attach.png")
+local CLOSE_TEX = getTexture("media/ui/Notloc/SidePanel/close.png")
+local BLANK_TOGGLE_TEX = getTexture("media/ui/Notloc/SidePanel/toggle.png")
+
 local COLLAPSE_TEX = getTexture("media/ui/Panel_Icon_Collapse.png");
 local PIN_TEX = getTexture("media/ui/Panel_Icon_Pin.png");
 
@@ -54,7 +56,7 @@ function SidePanel:new(title, layoutId, width, inventoryPane, buttonTexture, set
     o.pin = true;
 
     o.defaultWidth = width;
-    o.buttonTexture = buttonTexture;
+    o.buttonTexture = buttonTexture or BLANK_TOGGLE_TEX
     o.settings = settingsObj
 
     return o;

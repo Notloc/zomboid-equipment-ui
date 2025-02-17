@@ -1,5 +1,7 @@
-local c = require ("EquipmentUI/Settings")
-require ("InventoryAndLoot") -- I do not remember what this is
+local c = require("EquipmentUI/Settings")
+require("InventoryAndLoot") -- I do not remember what this is
+
+local EQUIPMENT_UI_TOGGLE_TEX = nil --getTexture("media/ui/EquipmentUI/equipment_min.png")
 
 local og_createChildren = ISInventoryPage.createChildren
 ---@diagnostic disable-next-line: duplicate-set-field
@@ -7,7 +9,7 @@ function ISInventoryPage:createChildren()
     og_createChildren(self)
 
     if self.onCharacter then
-        self.equipmentUi = EquipmentUIWindow:new(getText("UI_equipment_equipment"), "EquipmentUILayout", c.EQUIPMENT_WIDTH, self.inventoryPane, self.player, c);
+        self.equipmentUi = EquipmentUIWindow:new(getText("UI_equipment_equipment"), "EquipmentUILayout", 220, self.inventoryPane, EQUIPMENT_UI_TOGGLE_TEX, c, self.player);
         self.equipmentUi:addToInventoryPage(self)
 
         local playerObj = getSpecificPlayer(self.player)
