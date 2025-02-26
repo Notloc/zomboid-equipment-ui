@@ -17,12 +17,6 @@ function EquipmentUIWindow:createChildren()
     self.equipmentUi:initialise()
     self.scrollView:addScrollChild(self.equipmentUi);
 
-    Events.OnKeyPressed.Add(function(key)
-        if key == getCore():getKey("equipment_toggle_window") then
-            self:toggleWindow();
-        end
-    end);
-
     NotlocControllerNode
         :injectControllerNode(self, true)
         :setChildrenNodeProvider(self.equipmentUi.getControllerNodes, self.equipmentUi)
@@ -80,5 +74,4 @@ function EquipmentUIWindow:onJoypadDown(button)
             setJoypadFocus(self.playerNum, getPlayerLoot(self.playerNum));
         end
     end
-
 end

@@ -3,7 +3,6 @@ local SidePanelToggle = require("Notloc/UI/SidePanels/SidePanelToggle")
 local POPOUT_TEX = getTexture("media/ui/Notloc/SidePanel/popout.png")
 local ATTACH_TEX = getTexture("media/ui/Notloc/SidePanel/attach.png")
 local CLOSE_TEX = getTexture("media/ui/Notloc/SidePanel/close.png")
-local BLANK_TOGGLE_TEX = getTexture("media/ui/Notloc/SidePanel/toggle.png")
 
 local COLLAPSE_TEX = getTexture("media/ui/Panel_Icon_Collapse.png");
 local PIN_TEX = getTexture("media/ui/Panel_Icon_Pin.png");
@@ -21,7 +20,7 @@ local function getLayoutModData(layoutId, playerObj, isController)
     return modData;
 end
 
----@class NotlocSidePanel : ISPanel
+---@class SidePanel : ISPanel
 local SidePanel = ISPanel:derive("SidePanel");
 
 ---@param title string
@@ -30,7 +29,7 @@ local SidePanel = ISPanel:derive("SidePanel");
 ---@param inventoryPane ISInventoryPane
 ---@param playerNum number
 ---@param settingsObj table -- Must have SCALE
-function SidePanel:new(title, layoutId, width, inventoryPane, buttonTexture, settingsObj, playerNum)
+function SidePanel:new(title, layoutId, width, inventoryPane, settingsObj, playerNum)
 	local o = {};
 	o = ISPanel:new(0, 0, width, inventoryPane.parent:getHeight());
 	setmetatable(o, self);
@@ -51,12 +50,15 @@ function SidePanel:new(title, layoutId, width, inventoryPane, buttonTexture, set
     o.isDocked = modData.isDocked;
     o.isClosed = modData.isClosed;
 
+    local playerObj = getSpecificPlayer(playerNum)
+    local isController = playerObj:getJoypadBind() ~= -1
+    o.isClosed = isController or o.isClosed
+
     o.isCollapsed = false;
     o.collapseCounter = 0;
     o.pin = true;
 
     o.defaultWidth = width;
-    o.buttonTexture = buttonTexture or BLANK_TOGGLE_TEX
     o.settings = settingsObj
 
     return o;
@@ -195,9 +197,20 @@ function SidePanel:onPopoutOrAttach()
 
     local modData = getLayoutModData(self.layoutId, self.char, self:isController());
     modData.isDocked = self.isDocked;
+
+    if self.toggleElement then
+        -- Twice to avoid changing state, but to update the buttons
+        self.toggleElement:onToggleSidePanel();
+        self.toggleElement:onToggleSidePanel();
+    end
 end
 
+
 function SidePanel:onClose()
+    self:closeSidePanel();
+end
+
+function SidePanel:closeSidePanel()
     self.isClosed = true;
     self:setVisible(false);
 
@@ -207,7 +220,7 @@ function SidePanel:onClose()
     self.inventoryPane.parent:bringToTop();
 end
 
-function SidePanel:toggleWindow()
+function SidePanel:toggleSidePanel()
     if self.isClosed or not self:isVisible() then
         self.isClosed = false;
         if self.isDocked or self:isController() then
@@ -224,6 +237,17 @@ function SidePanel:toggleWindow()
 
     local modData = getLayoutModData(self.layoutId, self.char, self:isController());
     modData.isClosed = self.isClosed;
+
+    if not self.isClosed and not self.isDocked then
+        self:bringToTop();
+    end
+
+    return not self.isClosed;
+end
+
+---@deprecated
+function SidePanel:toggleWindow()
+    self:toggleSidePanel();
 end
 
 function SidePanel:onMouseDown(x, y)
@@ -375,6 +399,13 @@ function SidePanel:SaveLayout(name, layout)
     ISLayoutManager.DefaultSaveWindow(self, layout)
 end
 
+function SidePanel:bringToTop()
+    ISPanel.bringToTop(self)
+    if self.isDocked then
+        self.inventoryPane.parent.notlocSidePanelManager:bringToTop()
+    end
+end
+
 -- Controller Window focus handling
 function SidePanel:onJoypadDirLeft(joypadData)
     setJoypadFocus(self.playerNum, getPlayerLoot(self.playerNum));
@@ -386,23 +417,6 @@ end
 
 function SidePanel:onJoypadDown(button)
 
-end
-
-function SidePanel:addToInventoryPage(inventoryPage)
-    local sidePanelButtons = inventoryPage.notlocSidePanelButtons or {}
-    local last = sidePanelButtons[#sidePanelButtons] or {}
-    local y = (last.offsetY or inventoryPage:titleBarHeight()) + inventoryPage:titleBarHeight()
-
-    local toggleButton = SidePanelToggle:new(y, self, self.buttonTexture, self.inventoryPane)
-    toggleButton:initialise()
-    toggleButton:addToUIManager()
-
-    self.toggleElement = toggleButton
-
-    self:initialise()
-    self:addToUIManager()
-
-    inventoryPage.notlocSidePanelButtons = sidePanelButtons
 end
 
 return SidePanel

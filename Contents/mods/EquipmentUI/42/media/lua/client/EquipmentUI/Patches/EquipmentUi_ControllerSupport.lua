@@ -1,17 +1,5 @@
 local OPT = require("EquipmentUI/Settings")
 
--- Cleanup when switching inputs
-Events.OnGameBoot.Add(function()
-    local og_removeInventoryUI = removeInventoryUI
-    function removeInventoryUI(id)
-        local data = getPlayerData(id);
-        if data and data.playerInventory then
-            data.playerInventory:destroyEquipmentUi()
-        end
-        og_removeInventoryUI(id)
-    end
-end)
-
 -- Toggle the UI when pressing the select button on the controller
 local og_ISInventoryPage_onJoypadDown = ISInventoryPage.onJoypadDown
 ---@diagnostic disable-next-line: duplicate-set-field

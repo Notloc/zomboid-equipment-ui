@@ -1,82 +1,85 @@
 require("ISUI/ISUIElement")
+local TOGGLE_BG_TEX = getTexture("media/ui/Notloc/SidePanel/toggle.png")
+local WHITE = {r=1, g=1, b=1, a=1}
 
-local NotlocSidePanelToggle = ISUIElement:derive("SidePanelToggle");
+---@class SidePanelToggle : ISUIElement
+---@field sidePanel SidePanel
+---@field texture Texture
+local SidePanelToggle = ISUIElement:derive("SidePanelToggle");
 
-function NotlocSidePanelToggle:new(yOffset, notlocSidePanel, texture, inventoryPane)
+function SidePanelToggle:new(sidePanel, onToggleCallback, texture, color)
 	local o = {};
 	o = ISUIElement:new(0, 0, 16, 20);
 	setmetatable(o, self);
     self.__index = self;
 
-    o.yOffset = yOffset
     o.texture = texture
-    o.notlocSidePanel = notlocSidePanel
-    o.inventoryPane = inventoryPane
+    o.color = color
+    o.sidePanel = sidePanel
+    o.onToggleCallback = onToggleCallback
 
-    o.backgroundColor = {r=0, g=0, b=0, a=0}
-    o.borderColor = {r=0, g=0, b=0, a=0}
-
-    notlocSidePanel.toggleElement = o
+    sidePanel.toggleElement = o
 
     return o;
 end
 
-function NotlocSidePanelToggle:createChildren()
+function SidePanelToggle:createChildren()
     ISUIElement.createChildren(self);
-
-    self.toggleButton = ISButton:new(0, 0, self.width, self.height, "", self, self.onToggleSidePanel)
-    self.toggleButton:initialise()
-    self.toggleButton.image = self.texture
-
-    self.toggleButton:setAnchorLeft(true)
-    self.toggleButton:setAnchorRight(true)
-    self.toggleButton:setAnchorTop(true)
-    self.toggleButton:setAnchorBottom(true)
-    self.toggleButton:setImage(self.texture)
-    self.toggleButton.borderColor = {r=0, g=0, b=0, a=0}
-    self.toggleButton.backgroundColor = {r=0, g=0, b=0, a=0}
-
-    if not self.texture then
-        self.toggleButton.backgroundColor = {r=1, g=1, b=1, a=0.5}
-    end
-
-    self.toggleButton:forceImageSize(16, 20)
-
-    self:addChild(self.toggleButton)
-    self.toggleButton:bringToTop()
 end
 
-function NotlocSidePanelToggle:onToggleSidePanel()
-	local state = not self.notlocSidePanel:isVisible()
-	self.notlocSidePanel:setVisible(state)
-    self.notlocSidePanel.isClosed = not state
-
-    if not state then
-        self.inventoryPane.parent:bringToTop()
+function SidePanelToggle:onToggleSidePanel()
+	local state = self.sidePanel:toggleSidePanel()
+    if self.onToggleCallback then
+        self.onToggleCallback(self.sidePanel, state)
     end
 end
 
-function NotlocSidePanelToggle:prerender()
-    local invPage = self.inventoryPane.parent
+function SidePanelToggle:prerender()
+    self:setStencilRect(0, 0, self.width, self.height);
+    self:drawTextureScaledAspect(TOGGLE_BG_TEX, 0, 0, 16, 20, 0.9, 0.75, 0.75, 0.75);
+end
 
-    local targetX = invPage:getX()
-    local targetY = invPage:getY() + self.yOffset
+function SidePanelToggle:render()
+    local isOpen = not self.sidePanel.isClosed
+    local col = isOpen and self.color or WHITE
+    self:drawTextureScaledAspect(self.texture, 3, 3, 12, 14, 1, col.r, col.g, col.b);
+    self:clearStencilRect();
+end
 
-    local dockedAndVisible = self.notlocSidePanel.isDocked and self.notlocSidePanel:isVisible()
+function SidePanelToggle:onMouseDown(x, y)
+    self:onToggleSidePanel()
+    return true
+end
 
-    if dockedAndVisible or math.abs(getMouseX() - targetX) + math.abs(getMouseY() - targetY) < 38 then
-        self:setWidth(16)
+function SidePanelToggle:onMouseMove(dx, dy)
+    if self:isMouseOver() then
+        self.backgroundColor = {r=0.3, g=0.3, b=0.3, a=0.3}
     else
-        self:setWidth(6)
+        self.backgroundColor = {r=0, g=0, b=0, a=0}
     end
-
-    self:setHeight(16);
-    self:setX(targetX - self:getWidth());
-    self:setY(targetY);
-
-    local invIsVisible = self.inventoryPane.parent:isVisible() and not self.inventoryPane.parent.isCollapsed
-    local undockedAndOpen = not self.notlocSidePanel.isDocked and self.notlocSidePanel:isVisible()
-    self.toggleButton:setVisible(invIsVisible and not undockedAndOpen)
 end
 
-return NotlocSidePanelToggle
+function SidePanelToggle:onMouseMoveOutside(dx, dy)
+    self.backgroundColor = {r=0, g=0, b=0, a=0}
+end
+
+function SidePanelToggle:updateSize()
+    local dockedAndVisible = self.sidePanel.isDocked and not self.sidePanel.isClosed
+    if self.mouseOver or dockedAndVisible then
+        self:expand()
+    else
+        self:shrink()
+    end
+end
+
+function SidePanelToggle:shrink()
+    self:setWidth(9)
+    self:setX(7)
+end
+
+function SidePanelToggle:expand()
+    self:setWidth(16)
+    self:setX(0)
+end
+
+return SidePanelToggle

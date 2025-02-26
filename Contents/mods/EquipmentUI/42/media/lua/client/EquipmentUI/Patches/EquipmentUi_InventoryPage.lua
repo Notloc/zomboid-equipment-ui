@@ -1,7 +1,8 @@
-local c = require("EquipmentUI/Settings")
 require("InventoryAndLoot") -- I do not remember what this is
+local c = require("EquipmentUI/Settings")
+local SidePanelManager = require("Notloc/UI/SidePanels/SidePanelManager")
 
-local EQUIPMENT_UI_TOGGLE_TEX = nil --getTexture("media/ui/EquipmentUI/equipment_min.png")
+local EQUIPMENT_UI_TOGGLE_TEX = getTexture("media/ui/EquipmentUI/equipment_icon.png")
 
 local og_createChildren = ISInventoryPage.createChildren
 ---@diagnostic disable-next-line: duplicate-set-field
@@ -9,45 +10,22 @@ function ISInventoryPage:createChildren()
     og_createChildren(self)
 
     if self.onCharacter then
-        self.equipmentUi = EquipmentUIWindow:new(getText("UI_equipment_equipment"), "EquipmentUILayout", 220, self.inventoryPane, EQUIPMENT_UI_TOGGLE_TEX, c, self.player);
-        self.equipmentUi:addToInventoryPage(self)
+        local sidePanelManager = SidePanelManager.getOrCreate(self)
 
-        local playerObj = getSpecificPlayer(self.player)
-        local isController = playerObj:getJoypadBind() ~= -1
-        self.equipmentUi.isClosed = isController
+        self.equipmentUi = EquipmentUIWindow:new(getText("UI_equipment_equipment"), "EquipmentUILayout", 220, self.inventoryPane, c, self.player);
+        sidePanelManager:addSidePanel(self.equipmentUi, EQUIPMENT_UI_TOGGLE_TEX, {r=1, g=0.8, b=0.5, a=1}, "equipment_toggle_window")
 
-        local dragRenderer = nil
         if not c.InventoryTetris then
-            dragRenderer = EquipmentDragItemRenderer:new(self.equipmentUi, self.inventoryPane, self.player)
+            local dragRenderer = EquipmentDragItemRenderer:new(self.equipmentUi, self.inventoryPane, self.player)
             dragRenderer:initialise()
             dragRenderer:addToUIManager()
-        end
 
-        self.destroyEquipmentUi = function()
-            self.equipmentUi:removeFromUIManager()
-            self.equipmentUi.toggleElement:removeFromUIManager()
-            if dragRenderer then
+            local og_removeFromUIManager = self.removeFromUIManager
+            self.removeFromUIManager = function(self)
+                og_removeFromUIManager(self)
                 dragRenderer:removeFromUIManager()
             end
         end
-
-        Events.OnPlayerDeath.Add(function(player)
-            if not player:isLocalPlayer() or player:getPlayerNum() ~= self.player then
-                return
-            end
-            self.destroyEquipmentUi()
-        end);
-
-    end
-end
-
-local og_render = ISInventoryPage.prerender
----@diagnostic disable-next-line: duplicate-set-field
-function ISInventoryPage:prerender()
-    og_render(self)
-
-    if self.equipmentUi and not self.equipmentUi.isClosed then
-        self.equipmentUi:onInventoryVisibilityChanged(self.pin or not self.isCollapsed);
     end
 end
 
